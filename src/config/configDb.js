@@ -8,7 +8,7 @@ const sequelize = new Sequelize(
   {
     host: configEnv.database.host,
     port: configEnv.database.port,
-    dialect: 'mysql',
+    dialect: 'postgres',
     logging: configEnv.app.nodeEnv === 'development' ? console.log : false
   }
 );

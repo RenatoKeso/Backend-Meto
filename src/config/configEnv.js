@@ -26,6 +26,9 @@ const configEnv = {
     name: process.env.DEFAULT_ADMIN_NAME || 'Administrador',
     email: process.env.DEFAULT_ADMIN_EMAIL || 'admin@example.com',
     password: process.env.DEFAULT_ADMIN_PASSWORD || 'admin123'
+  },
+  jwt: {
+    secret: process.env.JWT_SECRET || 'ClaveSecretaTecho2026'
   }
 };
 
