@@ -1,9 +1,11 @@
 const express = require('express');
 const authController = require('../controllers/authController');
+const { verifyToken } = require('../middlewares/authMiddleware');
 
 const router = express.Router();
 
-// Creamos la ruta POST para iniciar sesión
 router.post('/login', authController.login);
+router.get('/me', verifyToken, authController.me);
+router.post('/logout', verifyToken, authController.logout);
 
 module.exports = router;
