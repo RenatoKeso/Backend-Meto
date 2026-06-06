@@ -1,12 +1,15 @@
 const sequelize = require('../config/configDb');
 const User = require('./User');
+const VoluntarioModels = require('./VoluntarioModels');
 
 const entities = {
-  User
+  User,
+  ...VoluntarioModels
 };
 
 module.exports = {
   sequelize,
   entities,
-  User
+  User,
+  ...VoluntarioModels
 };
