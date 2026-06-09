@@ -2,6 +2,7 @@ const express = require('express');
 const authRoutes = require('./routes/authRoutes');
 const voluntarioRoutes = require('./routes/voluntarioRoutes');
 const familiaRoutes = require('./routes/familiaRoutes');
+const actividadRoutes = require('./routes/actividadRoutes'); 
 const { verifyToken } = require('./middlewares/authMiddleware');
 const { authorizeRole } = require('./middlewares/roleMiddleware');
 
@@ -14,6 +15,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/voluntarios', voluntarioRoutes);
 app.use('/api/voluntario', voluntarioRoutes); // Alias singular
 app.use('/api/familias', familiaRoutes);
+app.use('/api/actividades', actividadRoutes);
 
 // Ruta de salud
 app.get('/health', (req, res) => {
