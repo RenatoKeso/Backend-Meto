@@ -3,6 +3,7 @@ const authRoutes = require('./routes/authRoutes');
 const voluntarioRoutes = require('./routes/voluntarioRoutes');
 const familiaRoutes = require('./routes/familiaRoutes');
 const actividadRoutes = require('./routes/actividadRoutes'); 
+const donacionRoutes = require('./routes/donacionRoutes');
 const { verifyToken } = require('./middlewares/authMiddleware');
 const { authorizeRole } = require('./middlewares/roleMiddleware');
 
@@ -16,7 +17,7 @@ app.use('/api/voluntarios', voluntarioRoutes);
 app.use('/api/voluntario', voluntarioRoutes); // Alias singular
 app.use('/api/familias', familiaRoutes);
 app.use('/api/actividades', actividadRoutes);
-
+app.use('/api/donaciones', donacionRoutes);
 // Ruta de salud
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'Backend funcionando' });
