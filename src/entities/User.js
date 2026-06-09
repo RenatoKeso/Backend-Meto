@@ -27,17 +27,17 @@ const User = sequelize.define(
       allowNull: false
     },
     role: {
-      type: DataTypes.ENUM('admin', 'user'),
+      type: DataTypes.ENUM('admin', 'coordinator', 'staff', 'volunteer', 'donor', 'auditor'),
       allowNull: false,
-      defaultValue: 'user'
+      defaultValue: 'volunteer'
     }
   },
   {
     tableName: 'users',
     timestamps: true,
     hooks: {
-      beforeCreate: async (user) =>{
-        if (user.password){
+      beforeCreate: async (user) => {
+        if (user.password) {
           const salt = await bcrypt.genSalt(10);
           user.password = await bcrypt.hash(user.password, salt);
         }
