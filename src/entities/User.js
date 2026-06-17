@@ -47,3 +47,7 @@ const User = sequelize.define(
 );
 
 module.exports = User;
+
+//QUE HACE ESTE CODIGO: Este código define un modelo de usuario
+// Tiene los roles de admin, coordinator, staff, volunteer, donor y auditor
+// Antes de crear un usuario, se encripta su contraseña utilizando bcrypt para mayor seguridad.

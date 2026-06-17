@@ -34,3 +34,4 @@ app.get('/api/user/perfil', verifyToken, authorizeRole('admin', 'user'), (req, r
 });
 
 module.exports = app;
+

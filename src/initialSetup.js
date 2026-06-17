@@ -68,3 +68,8 @@ if (require.main === module) {
 }
 
 module.exports = initialSetup;
+//QUE HACE ESTE CODIGO: Este código realiza la configuración inicial de la base de datos
+//Agregue las rutas que definen las operaciones relacionadas con los voluntarios, actividades y familias,
+//y el controlador de autenticación para manejar el inicio de sesión y la obtención de información del usuario autenticado.
+// Y tambien agregue la ruta /api/admin/dashboard (solo admin) y api/user/perfil (admin y user) y importe los middlwares
+// de autenticación y autorización para proteger estas rutas.
