@@ -1,40 +1,32 @@
-/**
- * Rutas de Voluntarios
- * Aquí definimos los endpoints relacionados con voluntarios
- */
-
 const express = require('express');
 const router = express.Router();
 const voluntarioController = require('../controllers/voluntarioController');
+const { verifyToken } = require('../middlewares/authMiddleware');
+const { authorizeRole } = require('../middlewares/roleMiddleware');
 
 // Test route to verify the router is working
 router.get('/test', (req, res) => res.json({ message: 'Voluntario Router is working!' }));
 
-// POST /voluntarios - Crear un nuevo voluntario
-// ...
-
-// POST /voluntarios - Crear un nuevo voluntario
+// POST /voluntarios - Registro de postulación: queda público (no requiere token).
+// Central revisa y activa la cuenta después mediante PATCH.
 router.post('/', voluntarioController.crearVoluntario);
 
-// GET /voluntarios - Obtener todos los voluntarios
-router.get('/', voluntarioController.obtenerTodosLosVoluntarios);
+// GET /voluntarios - Central (validación de postulantes) y jefe de cuadrilla (lista de su equipo)
+router.get('/', verifyToken, authorizeRole('central', 'jefe_cuadrilla'), voluntarioController.obtenerTodosLosVoluntarios);
 
-// GET /voluntarios/:rut - Obtener un voluntario por RUT
-router.get('/:rut', voluntarioController.obtenerVoluntarioPorId);
+// GET /voluntarios/:rut - Los 3 roles (el propio voluntario consulta sus datos)
+router.get('/:rut', verifyToken, authorizeRole('central', 'jefe_cuadrilla', 'voluntario'), voluntarioController.obtenerVoluntarioPorId);
 
-// PATCH /voluntarios/:rut - Actualizar un voluntario
-router.patch('/:rut', voluntarioController.actualizarVoluntario);
+// PATCH /voluntarios/:rut - Central activa cuentas/evalúa habilidades; voluntario actualiza sus propios datos médicos
+router.patch('/:rut', verifyToken, authorizeRole('central', 'voluntario'), voluntarioController.actualizarVoluntario);
 
-// DELETE /voluntarios/:rut - Borrado logico (activo = false)
-router.delete('/:rut', voluntarioController.eliminarVoluntario);
+// DELETE /voluntarios/:rut - Borrado logico (activo = false), solo central
+router.delete('/:rut', verifyToken, authorizeRole('central'), voluntarioController.eliminarVoluntario);
 
 module.exports = router;
 
-//QUE HACE ESTE CODIGO: Este código define las rutas para manejar las operaciones relacionadas con los voluntarios en una aplicación
-// verifyToken se usa para proteger las rutas, lo que significa que solo los usuarios autenticados pueden acceder a estas rutas.
-// authorizeRole se usa para restringir el acceso a ciertas rutas solo a usuarios con roles específicos, como 'admin' o 'Coordinador'.
-// Cada ruta está asociada a una función del controlador de voluntarios que maneja la lógica de negocio para esa operación específica. 
-// Por ejemplo, la ruta POST /voluntarios llama a la función crearVoluntario del controlador para crear un nuevo voluntario en la base de datos. 
-// La ruta GET /voluntarios/:rut permite obtener la información de un voluntario específico utilizando su RUT como identificador. 
-// La ruta PATCH /voluntarios/:rut se utiliza para actualizar la información de un voluntario existente, 
-// y la ruta DELETE /voluntarios/:rut realiza un borrado lógico estableciendo el campo "activo" en false.
+//QUE HACE ESTE CODIGO: Define las rutas de voluntarios alineadas a los 3 roles reales de la fundación.
+// El registro (POST) queda abierto porque es la postulación web; central la revisa y activa después.
+// Central valida postulantes y administra voluntarios (GET todos, PATCH, DELETE).
+// Jefe de cuadrilla ve la lista de su equipo (GET todos).
+// Voluntario puede ver y actualizar su propio perfil (datos médicos, restricciones alimentarias).

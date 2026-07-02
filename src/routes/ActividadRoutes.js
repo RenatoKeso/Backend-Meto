@@ -5,20 +5,20 @@ const { authorizeRole } = require('../middlewares/roleMiddleware');
 
 const router = express.Router();
 
-// POST - Solo admin y coordinator pueden crear actividades
-router.post('/', verifyToken, authorizeRole('admin', 'coordinator'), actividadController.crearActividad);
+// POST - Central y jefe de cuadrilla pueden crear actividades
+router.post('/', verifyToken, authorizeRole('central', 'jefe_cuadrilla'), actividadController.crearActividad);
 
-// GET todas - Admin, coordinator, staff y volunteer pueden ver
-router.get('/', verifyToken, authorizeRole('admin', 'coordinator', 'staff', 'volunteer'), actividadController.ObtenerTodasLasActividades);
+// GET todas - Los 3 roles pueden ver
+router.get('/', verifyToken, authorizeRole('central', 'jefe_cuadrilla', 'voluntario'), actividadController.ObtenerTodasLasActividades);
 
-// GET por id - Admin, coordinator, staff y volunteer pueden ver
-router.get('/:id', verifyToken, authorizeRole('admin', 'coordinator', 'staff', 'volunteer'), actividadController.ObtenerActividadPorID);
+// GET por id - Los 3 roles pueden ver
+router.get('/:id', verifyToken, authorizeRole('central', 'jefe_cuadrilla', 'voluntario'), actividadController.ObtenerActividadPorID);
 
-// PUT - Solo admin y coordinator pueden modificar
-router.put('/:id', verifyToken, authorizeRole('admin', 'coordinator'), actividadController.ModificarActividad);
+// PUT - Central y jefe de cuadrilla pueden modificar (jefe de cuadrilla registra hitos/tiempos de su obra)
+router.put('/:id', verifyToken, authorizeRole('central', 'jefe_cuadrilla'), actividadController.ModificarActividad);
 
-// DELETE - Solo admin puede eliminar
-router.delete('/:id', verifyToken, authorizeRole('admin'), actividadController.EliminarActividad);
+// DELETE - Solo central puede eliminar
+router.delete('/:id', verifyToken, authorizeRole('central'), actividadController.EliminarActividad);
 
 module.exports = router;
 

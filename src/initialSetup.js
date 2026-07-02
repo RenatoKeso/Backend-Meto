@@ -14,7 +14,7 @@ const createDefaultUsers = async () => {
       name: configEnv.defaultAdmin.name,
       email: configEnv.defaultAdmin.email,
       password: configEnv.defaultAdmin.password,
-      role: 'admin'
+      role: 'central'
     }
   ]);
 };
