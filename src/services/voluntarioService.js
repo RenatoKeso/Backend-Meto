@@ -169,6 +169,17 @@ const actualizarCapacidadFisica = async (rut, payload) => {
   return sanitizeVoluntario(voluntario);
 };
 
+const activarVoluntario = async (rut, rol_id) => {
+  const voluntario = await UsuarioVoluntario.findOne({ where: { rut } });
+  if (!voluntario) {
+    throw buildError('Voluntario no encontrado', 404);
+  }
+
+  await voluntario.update({ activo: true, rol_id });
+
+  return sanitizeVoluntario(voluntario);
+};
+
 module.exports = {
   createVoluntario,
   getAllVoluntarios,
@@ -176,4 +187,5 @@ module.exports = {
   updateVoluntario,
   deleteVoluntario,
   actualizarCapacidadFisica,
+  activarVoluntario
 };

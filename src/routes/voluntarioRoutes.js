@@ -17,6 +17,9 @@ router.get('/:rut', verifyToken, authorizeRole('central', 'jefe_cuadrilla', 'vol
 // PATCH /voluntarios/:rut - Central activa cuentas/evalúa habilidades; voluntario actualiza sus propios datos médicos
 router.patch('/:rut', verifyToken, authorizeRole('central', 'voluntario'), voluntarioController.actualizarVoluntario);
 
+// PATCH /voluntarios/:rut/activar - Central revisa la postulación, activa la cuenta y asigna el rol_id
+router.patch('/:rut/activar', verifyToken, authorizeRole('central'), voluntarioController.activarVoluntario);
+
 // DELETE /voluntarios/:rut - Borrado logico (activo = false), solo central
 router.delete('/:rut', verifyToken, authorizeRole('central'), voluntarioController.eliminarVoluntario);
 

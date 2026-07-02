@@ -195,6 +195,26 @@ const actualizarCapacidadFisica = async (req, res) => {
   }
 };
 
+const activarVoluntario = async (req, res) => {
+  const { rut } = req.params;
+  const { rol_id } = req.body;
+
+  if (!validarRutParam(res, rut)) {
+    return undefined;
+  }
+
+  if (!rol_id) {
+    return sendError(res, 400, 'El rol_id es obligatorio para activar al voluntario');
+  }
+
+  try {
+    const voluntario = await voluntarioService.activarVoluntario(rut, rol_id);
+    return sendSuccess(res, 200, 'Voluntario activado y rol asignado correctamente', voluntario);
+  } catch (serviceError) {
+    return handleServiceError(res, serviceError);
+  }
+};
+
 const obtenerActividadesDisponibles = async (req, res) => {
   const { rut } = req.params;
 
@@ -223,4 +243,5 @@ module.exports = {
   eliminarVoluntario,
   actualizarCapacidadFisica,
   obtenerActividadesDisponibles,
+  activarVoluntario
 };

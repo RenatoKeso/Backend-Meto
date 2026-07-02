@@ -28,7 +28,23 @@ const logout = (req, res) => {
     return res.status(200).json({ message: 'Sesión cerrada correctamente.' });
 };
 
-module.exports = { login, me, logout };
+const assignRole = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { role } = req.body;
+
+        if (!role) {
+            return res.status(400).json({ message: 'El rol es obligatorio' });
+        }
+
+        const data = await authService.assignRole(id, role);
+        return res.status(200).json({ message: 'Rol asignado correctamente', user: data });
+    } catch (error) {
+        return res.status(400).json({ message: error.message });
+    }
+};
+
+module.exports = { login, me, logout, assignRole };
 
 //QUE HACE ESTE CODIGO: Este código define un controlador de autenticación para una aplicación Node.js.
 // El controlador tiene tres funciones principales: login, me y logout.

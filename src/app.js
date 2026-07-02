@@ -34,4 +34,3 @@ app.get('/api/user/perfil', verifyToken, authorizeRole('central', 'jefe_cuadrill
 });
 
 module.exports = app;
-

@@ -25,7 +25,25 @@ const getMe = async (id) => {
   return { id: user.id, name: user.name, email: user.email, role: user.role };
 };
 
-module.exports = { login, getMe };
+const ROLES_VALIDOS = ['central', 'jefe_cuadrilla', 'voluntario'];
+
+const assignRole = async (userId, newRole) => {
+  if (!ROLES_VALIDOS.includes(newRole)) {
+    throw new Error(`Rol inválido. Los roles permitidos son: ${ROLES_VALIDOS.join(', ')}`);
+  }
+
+  const updatedUser = await userRepository.updateRole(userId, newRole);
+  if (!updatedUser) throw new Error('Usuario no encontrado');
+
+  return {
+    id: updatedUser.id,
+    name: updatedUser.name,
+    email: updatedUser.email,
+    role: updatedUser.role
+  };
+};
+
+module.exports = { login, getMe, assignRole };
 
 //QUE HACE ESTE CODIGO: Este código define un servicio de autenticación para una aplicación Node.js.
 // El servicio tiene dos funciones principales: login y getMe.
