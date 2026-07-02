@@ -27,9 +27,9 @@ const User = sequelize.define(
       allowNull: false
     },
     role: {
-      type: DataTypes.ENUM('admin', 'coordinator', 'staff', 'volunteer', 'donor', 'auditor'),
+      type: DataTypes.ENUM('central', 'jefe_cuadrilla', 'voluntario'),
       allowNull: false,
-      defaultValue: 'volunteer'
+      defaultValue: 'voluntario'
     }
   },
   {
@@ -47,3 +47,7 @@ const User = sequelize.define(
 );
 
 module.exports = User;
+
+//QUE HACE ESTE CODIGO: Este código define un modelo de usuario
+// Tiene los roles de admin, coordinator, staff, volunteer, donor y auditor
+// Antes de crear un usuario, se encripta su contraseña utilizando bcrypt para mayor seguridad.

@@ -7,7 +7,7 @@ const { authorizeRole } = require("../middlewares/roleMiddleware");
 const router = express.Router();
 
 // Roles de la organización habilitados para gestionar requisitos y asignaciones de voluntarios
-const ROLES_ORGANIZACION = ["admin", "coordinator", "staff"];
+const ROLES_ORGANIZACION = ["central", "jefe_cuadrilla"];
 
 // Todas las rutas requieren autenticación (verifyToken)
 router.post("/", verifyToken, actividadController.crearActividad);

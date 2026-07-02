@@ -7,7 +7,7 @@ const { authorizeRole } = require('../middlewares/roleMiddleware');
 // POST /donaciones - Cualquiera puede donar, no requiere token
 router.post('/', donacionController.crearDonacion);
 
-// GET /donaciones - Solo el administrador puede ver el historial
-router.get('/', verifyToken, authorizeRole('admin'), donacionController.obtenerDonaciones);
+// GET /donaciones - Solo central puede ver el historial
+router.get('/', verifyToken, authorizeRole('central'), donacionController.obtenerDonaciones);
 
 module.exports = router;

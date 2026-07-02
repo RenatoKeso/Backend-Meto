@@ -26,3 +26,9 @@ const getMe = async (id) => {
 };
 
 module.exports = { login, getMe };
+
+//QUE HACE ESTE CODIGO: Este código define un servicio de autenticación para una aplicación Node.js.
+// El servicio tiene dos funciones principales: login y getMe.
+// La función login maneja la autenticación del usuario, verificando el correo y la contraseña proporcionados, 
+// y devuelve un token JWT si las credenciales son válidas.
+// La función getMe devuelve la información del usuario autenticado utilizando su ID.
