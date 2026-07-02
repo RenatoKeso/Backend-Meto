@@ -6,18 +6,17 @@
 const express = require('express');
 const router = express.Router();
 const voluntarioController = require('../controllers/voluntarioController');
+const { verifyToken } = require('../middlewares/authMiddleware');
+const { authorizeRole } = require('../middlewares/roleMiddleware');
 
 // Test route to verify the router is working
 router.get('/test', (req, res) => res.json({ message: 'Voluntario Router is working!' }));
 
 // POST /voluntarios - Crear un nuevo voluntario
-// ...
-
-// POST /voluntarios - Crear un nuevo voluntario
 router.post('/', voluntarioController.crearVoluntario);
 
-// GET /voluntarios - Obtener todos los voluntarios
-router.get('/', voluntarioController.obtenerTodosLosVoluntarios);
+// GET /voluntarios - Solo central
+router.get('/', verifyToken, authorizeRole('central'), voluntarioController.obtenerTodosLosVoluntarios);
 
 // GET /voluntarios/:rut - Obtener un voluntario por RUT
 router.get('/:rut', voluntarioController.obtenerVoluntarioPorId);
