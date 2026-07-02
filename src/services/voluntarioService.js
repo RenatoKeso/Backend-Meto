@@ -1,5 +1,8 @@
-const bcrypt = require('bcryptjs');
-const { UsuarioVoluntario } = require('../entities/VoluntarioModels');
+const bcrypt = require("bcryptjs");
+const {
+  UsuarioVoluntario,
+  CapacidadFisica,
+} = require("../entities/VoluntarioModels");
 
 const SALT_ROUNDS = 10;
 
@@ -24,17 +27,18 @@ const sanitizeVoluntario = (voluntario) => {
 };
 
 const createVoluntario = async (payload) => {
-  const [voluntarioExistentePorRut, voluntarioExistentePorEmail] = await Promise.all([
-    UsuarioVoluntario.findOne({ where: { rut: payload.rut } }),
-    UsuarioVoluntario.findOne({ where: { email: payload.email } })
-  ]);
+  const [voluntarioExistentePorRut, voluntarioExistentePorEmail] =
+    await Promise.all([
+      UsuarioVoluntario.findOne({ where: { rut: payload.rut } }),
+      UsuarioVoluntario.findOne({ where: { email: payload.email } }),
+    ]);
 
   if (voluntarioExistentePorRut) {
-    throw buildError('Ya existe un voluntario con ese RUT', 409);
+    throw buildError("Ya existe un voluntario con ese RUT", 409);
   }
 
   if (voluntarioExistentePorEmail) {
-    throw buildError('Ya existe un voluntario con ese email', 409);
+    throw buildError("Ya existe un voluntario con ese email", 409);
   }
 
   const passwd_hash = await bcrypt.hash(payload.password, SALT_ROUNDS);
@@ -50,7 +54,7 @@ const createVoluntario = async (payload) => {
     activo: payload.activo,
     clasificacion: payload.clasificacion,
     contacto_emergencia: payload.contacto_emergencia,
-    rol_id: payload.rol_id
+    rol_id: payload.rol_id,
   });
 
   // Handling medical data if provided (assuming a separate creation or update)
@@ -64,15 +68,21 @@ const createVoluntario = async (payload) => {
 
 const getAllVoluntarios = async ({ incluirInactivos = false } = {}) => {
   const where = incluirInactivos ? {} : { activo: true };
-  const voluntarios = await UsuarioVoluntario.findAll({ where });
+  const voluntarios = await UsuarioVoluntario.findAll({
+    where,
+    include: [{ model: CapacidadFisica, as: "capacidad_fisica" }],
+  });
 
   return voluntarios.map(sanitizeVoluntario);
 };
 
 const getVoluntarioByRut = async (rut) => {
-  const voluntario = await UsuarioVoluntario.findOne({ where: { rut } });
+  const voluntario = await UsuarioVoluntario.findOne({
+    where: { rut },
+    include: [{ model: CapacidadFisica, as: "capacidad_fisica" }],
+  });
   if (!voluntario) {
-    throw buildError('Voluntario no encontrado', 404);
+    throw buildError("Voluntario no encontrado", 404);
   }
 
   return sanitizeVoluntario(voluntario);
@@ -81,20 +91,25 @@ const getVoluntarioByRut = async (rut) => {
 const updateVoluntario = async (rut, payload) => {
   const voluntario = await UsuarioVoluntario.findOne({ where: { rut } });
   if (!voluntario) {
-    throw buildError('Voluntario no encontrado', 404);
+    throw buildError("Voluntario no encontrado", 404);
   }
 
   const dataToUpdate = { ...payload };
 
   if (dataToUpdate.password) {
-    dataToUpdate.passwd_hash = await bcrypt.hash(dataToUpdate.password, SALT_ROUNDS);
+    dataToUpdate.passwd_hash = await bcrypt.hash(
+      dataToUpdate.password,
+      SALT_ROUNDS,
+    );
     delete dataToUpdate.password;
   }
 
   if (dataToUpdate.email && dataToUpdate.email !== voluntario.email) {
-    const voluntarioConEmail = await UsuarioVoluntario.findOne({ where: { email: dataToUpdate.email } });
+    const voluntarioConEmail = await UsuarioVoluntario.findOne({
+      where: { email: dataToUpdate.email },
+    });
     if (voluntarioConEmail && voluntarioConEmail.rut !== rut) {
-      throw buildError('Ya existe un voluntario con ese email', 409);
+      throw buildError("Ya existe un voluntario con ese email", 409);
     }
   }
 
@@ -107,13 +122,13 @@ const updateVoluntario = async (rut, payload) => {
 const deleteVoluntario = async (rut) => {
   const voluntario = await UsuarioVoluntario.findOne({ where: { rut } });
   if (!voluntario) {
-    throw buildError('Voluntario no encontrado', 404);
+    throw buildError("Voluntario no encontrado", 404);
   }
 
   if (voluntario.activo === false) {
     return {
       ...sanitizeVoluntario(voluntario),
-      yaEstabaInactivo: true
+      yaEstabaInactivo: true,
     };
   }
 
@@ -121,8 +136,37 @@ const deleteVoluntario = async (rut) => {
 
   return {
     ...sanitizeVoluntario(voluntario),
-    yaEstabaInactivo: false
+    yaEstabaInactivo: false,
   };
+};
+
+/**
+ * Crea o actualiza las capacidades físicas (movilidad, resistencia y capacidad de carga)
+ * del voluntario. Estos datos son complementarios y se completan/actualizan luego del registro.
+ */
+const actualizarCapacidadFisica = async (rut, payload) => {
+  const voluntario = await UsuarioVoluntario.findOne({ where: { rut } });
+  if (!voluntario) {
+    throw buildError("Voluntario no encontrado", 404);
+  }
+
+  if (voluntario.id_capacidad_fisica) {
+    const capacidadExistente = await CapacidadFisica.findByPk(
+      voluntario.id_capacidad_fisica,
+    );
+    await capacidadExistente.update(payload);
+  } else {
+    const nuevaCapacidad = await CapacidadFisica.create(payload);
+    await voluntario.update({
+      id_capacidad_fisica: nuevaCapacidad.id_capacidad_fisica,
+    });
+  }
+
+  await voluntario.reload({
+    include: [{ model: CapacidadFisica, as: "capacidad_fisica" }],
+  });
+
+  return sanitizeVoluntario(voluntario);
 };
 
 module.exports = {
@@ -130,5 +174,6 @@ module.exports = {
   getAllVoluntarios,
   getVoluntarioByRut,
   updateVoluntario,
-  deleteVoluntario
+  deleteVoluntario,
+  actualizarCapacidadFisica,
 };

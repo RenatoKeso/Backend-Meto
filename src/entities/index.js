@@ -1,14 +1,18 @@
-const sequelize = require('../config/configDb');
-const User = require('./User');
-const VoluntarioModels = require('./VoluntarioModels');
-const FamiliaModels = require('./FamiliaModels');
-const DonacionModels = require('./DonacionModels');
+const sequelize = require("../config/configDb");
+const User = require("./User");
+const VoluntarioModels = require("./VoluntarioModels");
+const FamiliaModels = require("./FamiliaModels");
+const DonacionModels = require("./DonacionModels");
+const ActividadModels = require("./ActividadModels");
+const PostulacionModels = require("./PostulacionModels");
 
 const entities = {
   User,
   ...VoluntarioModels,
   ...FamiliaModels,
-  ...DonacionModels
+  ...DonacionModels,
+  ...ActividadModels,
+  ...PostulacionModels,
 };
 
 module.exports = {
@@ -17,5 +21,7 @@ module.exports = {
   User,
   ...VoluntarioModels,
   ...FamiliaModels,
-  ...DonacionModels
+  ...DonacionModels,
+  ...ActividadModels,
+  ...PostulacionModels,
 };

@@ -1,9 +1,9 @@
-
-
-const { sendSuccess, sendError } = require('../handlers/responseHandler');
-const actividadService = require('../services/actividadService');
-const { createActividadSchema, updateActividadSchema } = require('../validations/actividadValidation');
-
+const { sendSuccess, sendError } = require("../handlers/responseHandler");
+const actividadService = require("../services/actividadService");
+const {
+  createActividadSchema,
+  updateActividadSchema,
+} = require("../validations/actividadValidation");
 
 const parseValidationError = (error) => {
   if (!error || !error.details) return [];
@@ -12,12 +12,21 @@ const parseValidationError = (error) => {
 
 const handleServiceError = (res, error) => {
   const statusCode = error.statusCode || 500;
-  return sendError(res, statusCode, error.message || 'Error interno del servidor', error.details || null);
+  return sendError(
+    res,
+    statusCode,
+    error.message || "Error interno del servidor",
+    error.details || null,
+  );
 };
 
 const validarIdParam = (res, id) => {
   if (!Number.isInteger(Number(id)) || Number(id) <= 0) {
-    sendError(res, 400, 'El ID de la actividad debe ser un número entero positivo');
+    sendError(
+      res,
+      400,
+      "El ID de la actividad debe ser un número entero positivo",
+    );
     return false;
   }
   return true;
@@ -28,30 +37,40 @@ const validarIdParam = (res, id) => {
 const crearActividad = async (req, res) => {
   const { error, value } = createActividadSchema.validate(req.body, {
     abortEarly: false,
-    stripUnknown: true
+    stripUnknown: true,
   });
 
   if (error) {
-    return sendError(res, 400, 'Datos de entrada inválidos', parseValidationError(error));
+    return sendError(
+      res,
+      400,
+      "Datos de entrada inválidos",
+      parseValidationError(error),
+    );
   }
 
   try {
     // id_usuario viene del token JWT (puesto por verifyToken en req.user)
     const payload = { ...value, id_usuario: req.user.id };
-    const actividad = await actividadService.crearActividad(payload);
-    return sendSuccess(res, 201, 'Actividad creada correctamente', actividad);
+    const actividad = await actividadService.CrearActividad(payload);
+    return sendSuccess(res, 201, "Actividad creada correctamente", actividad);
   } catch (serviceError) {
     return handleServiceError(res, serviceError);
   }
 };
 
-// 
+//
 //  Obtener todas las actividades
 
 const ObtenerTodasLasActividades = async (req, res) => {
   try {
     const actividades = await actividadService.ObtenerTodasLasActividades();
-    return sendSuccess(res, 200, 'Actividades obtenidas correctamente', actividades);
+    return sendSuccess(
+      res,
+      200,
+      "Actividades obtenidas correctamente",
+      actividades,
+    );
   } catch (serviceError) {
     return handleServiceError(res, serviceError);
   }
@@ -66,7 +85,7 @@ const ObtenerActividadPorID = async (req, res) => {
 
   try {
     const actividad = await actividadService.ObtenerActividadPorID(id);
-    return sendSuccess(res, 200, 'Actividad obtenida correctamente', actividad);
+    return sendSuccess(res, 200, "Actividad obtenida correctamente", actividad);
   } catch (serviceError) {
     return handleServiceError(res, serviceError);
   }
@@ -80,16 +99,29 @@ const ModificarActividad = async (req, res) => {
 
   const { error, value } = updateActividadSchema.validate(req.body, {
     abortEarly: false,
-    stripUnknown: true
+    stripUnknown: true,
   });
 
   if (error) {
-    return sendError(res, 400, 'Datos de entrada inválidos', parseValidationError(error));
+    return sendError(
+      res,
+      400,
+      "Datos de entrada inválidos",
+      parseValidationError(error),
+    );
   }
 
   try {
-    const actividadActualizada = await actividadService.ModificarActividad(id, value);
-    return sendSuccess(res, 200, 'Actividad actualizada correctamente', actividadActualizada);
+    const actividadActualizada = await actividadService.ModificarActividad(
+      id,
+      value,
+    );
+    return sendSuccess(
+      res,
+      200,
+      "Actividad actualizada correctamente",
+      actividadActualizada,
+    );
   } catch (serviceError) {
     return handleServiceError(res, serviceError);
   }
@@ -103,7 +135,12 @@ const EliminarActividad = async (req, res) => {
 
   try {
     const resultado = await actividadService.EliminarActividad(id);
-    return sendSuccess(res, 200, 'Actividad eliminada correctamente', resultado);
+    return sendSuccess(
+      res,
+      200,
+      "Actividad eliminada correctamente",
+      resultado,
+    );
   } catch (serviceError) {
     return handleServiceError(res, serviceError);
   }
