@@ -66,17 +66,10 @@ const crearVoluntario = async (req, res) => {
 
 const obtenerTodosLosVoluntarios = async (req, res) => {
   try {
-    const incluirInactivos = req.query.incluirInactivos === "true";
-    const voluntarios = await voluntarioService.getAllVoluntarios({
-      incluirInactivos,
-    });
+    const incluirInactivos = req.query.incluirInactivos === 'true';
+    const voluntarios = await voluntarioService.getAllVoluntarios({ incluirInactivos });
 
-    return sendSuccess(
-      res,
-      200,
-      "Voluntarios obtenidos correctamente",
-      voluntarios,
-    );
+    return sendSuccess(res, 200, 'Voluntarios obtenidos correctamente', voluntarios);
   } catch (serviceError) {
     return handleServiceError(res, serviceError);
   }
@@ -91,6 +84,12 @@ const obtenerVoluntarioPorId = async (req, res) => {
 
   try {
     const voluntario = await voluntarioService.getVoluntarioByRut(rut);
+
+    // Si el usuario autenticado tiene rol voluntario, solo puede ver su propio perfil
+    if (req.user.role === 'voluntario' && voluntario.email !== req.user.email) {
+      return sendError(res, 403, 'No tienes permiso para ver el perfil de otro voluntario');
+    }
+
     return sendSuccess(
       res,
       200,
@@ -101,6 +100,7 @@ const obtenerVoluntarioPorId = async (req, res) => {
     return handleServiceError(res, serviceError);
   }
 };
+
 
 const actualizarVoluntario = async (req, res) => {
   const { rut } = req.params;

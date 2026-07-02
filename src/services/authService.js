@@ -10,7 +10,7 @@ const login = async (email, password) => {
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) throw new Error('Correo o contraseña incorrectos');
 
-  const payload = { id: user.id, role: user.role };
+  const payload = { id: user.id, role: user.role, email: user.email };
   const token = jwt.sign(payload, configEnv.jwt.secret, { expiresIn: '2h' });
 
   return {
