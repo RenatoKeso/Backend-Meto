@@ -3,9 +3,14 @@
  * Maneja las peticiones HTTP relacionadas con voluntarios
  */
 
-const { sendSuccess, sendError } = require('../handlers/responseHandler');
-const voluntarioService = require('../services/voluntarioService');
-const { createVoluntarioSchema, updateVoluntarioSchema } = require('../validations/voluntarioValidations');
+const { sendSuccess, sendError } = require("../handlers/responseHandler");
+const voluntarioService = require("../services/voluntarioService");
+const postulacionService = require("../services/postulacionService");
+const {
+  createVoluntarioSchema,
+  updateVoluntarioSchema,
+  capacidadFisicaSchema,
+} = require("../validations/voluntarioValidations");
 
 const RUT_REGEX = /^\d{7,8}-[kK\d]$/;
 
@@ -19,12 +24,17 @@ const parseValidationError = (error) => {
 
 const handleServiceError = (res, error) => {
   const statusCode = error.statusCode || 500;
-  return sendError(res, statusCode, error.message || 'Error interno del servidor', error.details || null);
+  return sendError(
+    res,
+    statusCode,
+    error.message || "Error interno del servidor",
+    error.details || null,
+  );
 };
 
 const validarRutParam = (res, rut) => {
   if (!RUT_REGEX.test(rut)) {
-    sendError(res, 400, 'El RUT debe tener el formato XXXXXXXX-X');
+    sendError(res, 400, "El RUT debe tener el formato XXXXXXXX-X");
     return false;
   }
 
@@ -34,16 +44,21 @@ const validarRutParam = (res, rut) => {
 const crearVoluntario = async (req, res) => {
   const { error, value } = createVoluntarioSchema.validate(req.body, {
     abortEarly: false,
-    stripUnknown: true
+    stripUnknown: true,
   });
 
   if (error) {
-    return sendError(res, 400, 'Datos de entrada invalidos', parseValidationError(error));
+    return sendError(
+      res,
+      400,
+      "Datos de entrada invalidos",
+      parseValidationError(error),
+    );
   }
 
   try {
     const voluntario = await voluntarioService.createVoluntario(value);
-    return sendSuccess(res, 201, 'Voluntario creado correctamente', voluntario);
+    return sendSuccess(res, 201, "Voluntario creado correctamente", voluntario);
   } catch (serviceError) {
     return handleServiceError(res, serviceError);
   }
@@ -69,11 +84,23 @@ const obtenerVoluntarioPorId = async (req, res) => {
 
   try {
     const voluntario = await voluntarioService.getVoluntarioByRut(rut);
-    return sendSuccess(res, 200, 'Voluntario obtenido correctamente', voluntario);
+
+    // Si el usuario autenticado tiene rol voluntario, solo puede ver su propio perfil
+    if (req.user.role === 'voluntario' && voluntario.email !== req.user.email) {
+      return sendError(res, 403, 'No tienes permiso para ver el perfil de otro voluntario');
+    }
+
+    return sendSuccess(
+      res,
+      200,
+      "Voluntario obtenido correctamente",
+      voluntario,
+    );
   } catch (serviceError) {
     return handleServiceError(res, serviceError);
   }
 };
+
 
 const actualizarVoluntario = async (req, res) => {
   const { rut } = req.params;
@@ -84,16 +111,29 @@ const actualizarVoluntario = async (req, res) => {
 
   const { error, value } = updateVoluntarioSchema.validate(req.body, {
     abortEarly: false,
-    stripUnknown: true
+    stripUnknown: true,
   });
 
   if (error) {
-    return sendError(res, 400, 'Datos de entrada invalidos', parseValidationError(error));
+    return sendError(
+      res,
+      400,
+      "Datos de entrada invalidos",
+      parseValidationError(error),
+    );
   }
 
   try {
-    const voluntarioActualizado = await voluntarioService.updateVoluntario(rut, value);
-    return sendSuccess(res, 200, 'Voluntario actualizado correctamente', voluntarioActualizado);
+    const voluntarioActualizado = await voluntarioService.updateVoluntario(
+      rut,
+      value,
+    );
+    return sendSuccess(
+      res,
+      200,
+      "Voluntario actualizado correctamente",
+      voluntarioActualizado,
+    );
   } catch (serviceError) {
     return handleServiceError(res, serviceError);
   }
@@ -109,10 +149,87 @@ const eliminarVoluntario = async (req, res) => {
   try {
     const voluntario = await voluntarioService.deleteVoluntario(rut);
     const mensaje = voluntario.yaEstabaInactivo
-      ? 'El voluntario ya estaba inactivo'
-      : 'Voluntario desactivado correctamente';
+      ? "El voluntario ya estaba inactivo"
+      : "Voluntario desactivado correctamente";
 
     return sendSuccess(res, 200, mensaje, voluntario);
+  } catch (serviceError) {
+    return handleServiceError(res, serviceError);
+  }
+};
+
+const actualizarCapacidadFisica = async (req, res) => {
+  const { rut } = req.params;
+
+  if (!validarRutParam(res, rut)) {
+    return undefined;
+  }
+
+  const { error, value } = capacidadFisicaSchema.validate(req.body, {
+    abortEarly: false,
+    stripUnknown: true,
+  });
+
+  if (error) {
+    return sendError(
+      res,
+      400,
+      "Datos de entrada invalidos",
+      parseValidationError(error),
+    );
+  }
+
+  try {
+    const voluntario = await voluntarioService.actualizarCapacidadFisica(
+      rut,
+      value,
+    );
+    return sendSuccess(
+      res,
+      200,
+      "Capacidades fisicas actualizadas correctamente",
+      voluntario,
+    );
+  } catch (serviceError) {
+    return handleServiceError(res, serviceError);
+  }
+};
+
+const activarVoluntario = async (req, res) => {
+  const { rut } = req.params;
+  const { rol_id } = req.body;
+
+  if (!validarRutParam(res, rut)) {
+    return undefined;
+  }
+
+  if (!rol_id) {
+    return sendError(res, 400, 'El rol_id es obligatorio para activar al voluntario');
+  }
+
+  try {
+    const voluntario = await voluntarioService.activarVoluntario(rut, rol_id);
+    return sendSuccess(res, 200, 'Voluntario activado y rol asignado correctamente', voluntario);
+  } catch (serviceError) {
+    return handleServiceError(res, serviceError);
+  }
+};
+
+const obtenerActividadesDisponibles = async (req, res) => {
+  const { rut } = req.params;
+
+  if (!validarRutParam(res, rut)) {
+    return undefined;
+  }
+
+  try {
+    const actividades = await postulacionService.getActividadesDisponibles(rut);
+    return sendSuccess(
+      res,
+      200,
+      "Actividades disponibles obtenidas correctamente",
+      actividades,
+    );
   } catch (serviceError) {
     return handleServiceError(res, serviceError);
   }
@@ -123,5 +240,8 @@ module.exports = {
   obtenerTodosLosVoluntarios,
   obtenerVoluntarioPorId,
   actualizarVoluntario,
-  eliminarVoluntario
+  eliminarVoluntario,
+  actualizarCapacidadFisica,
+  obtenerActividadesDisponibles,
+  activarVoluntario
 };
