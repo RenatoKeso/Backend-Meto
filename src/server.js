@@ -13,7 +13,6 @@ const logRoutes = (app) => {
         const methods = Object.keys(layer.route.methods).filter(m => layer.route.methods[m]).join(', ').toUpperCase();
         routes.push(`${methods} ${prefix}${layer.route.path}`);
       } else if (layer.name === 'router' && layer.handle.stack) {
-        // Attempt to find the prefix for this router
         const routePath = layer.regexp.source
           .replace('^\\', '')
           .replace('\\/', '/')
@@ -21,8 +20,6 @@ const logRoutes = (app) => {
           .replace(/\\s*$/, '')
           .replace(/\\/g, '');
         
-        // This is a bit hacky, but usually the router's path is in the regexp
-        // For Express 4.x, we can try to find the path from the regexp
         const match = layer.regexp.source.match(/^\/\^?([^\s\/)]+)/);
         const prefixPath = match ? match[1] : '';
         
@@ -42,7 +39,6 @@ const logRoutes = (app) => {
 };
 
 
-  // Simplified log since we manually configured them
   console.log('Rutas configuradas:');
   console.log('  - /api/auth');
   console.log('  - /api/voluntarios');

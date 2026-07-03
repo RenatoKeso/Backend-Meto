@@ -10,7 +10,7 @@ const login = async (email, password) => {
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) throw new Error('Correo o contraseña incorrectos');
 
-  const payload = { id: user.id, role: user.role };
+  const payload = { id: user.id, role: user.role, email: user.email };
   const token = jwt.sign(payload, configEnv.jwt.secret, { expiresIn: '2h' });
 
   return {
@@ -25,4 +25,28 @@ const getMe = async (id) => {
   return { id: user.id, name: user.name, email: user.email, role: user.role };
 };
 
-module.exports = { login, getMe };
+const ROLES_VALIDOS = ['central', 'jefe_cuadrilla', 'voluntario'];
+
+const assignRole = async (userId, newRole) => {
+  if (!ROLES_VALIDOS.includes(newRole)) {
+    throw new Error(`Rol inválido. Los roles permitidos son: ${ROLES_VALIDOS.join(', ')}`);
+  }
+
+  const updatedUser = await userRepository.updateRole(userId, newRole);
+  if (!updatedUser) throw new Error('Usuario no encontrado');
+
+  return {
+    id: updatedUser.id,
+    name: updatedUser.name,
+    email: updatedUser.email,
+    role: updatedUser.role
+  };
+};
+
+module.exports = { login, getMe, assignRole };
+
+//QUE HACE ESTE CODIGO: Este código define un servicio de autenticación para una aplicación Node.js.
+// El servicio tiene dos funciones principales: login y getMe.
+// La función login maneja la autenticación del usuario, verificando el correo y la contraseña proporcionados, 
+// y devuelve un token JWT si las credenciales son válidas.
+// La función getMe devuelve la información del usuario autenticado utilizando su ID.

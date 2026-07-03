@@ -23,6 +23,21 @@ const createFamilia = async (payload) => {
     throw buildError('Ya existe una familia registrada con ese RUT de representante', 409);
   }
 
+  const direccionExistente = await Familia.findOne({
+
+    where: {
+      calle: payload.calle,
+      numero: payload.numero,
+      comuna: payload.comuna,
+      region: payload.region
+    } 
+  });
+
+  if(direccionExistente){
+    throw buildError('Ya existe una familia registrada con esa direccion', 409);
+  }
+    
+
   // Crear la familia principal
   const nuevaFamilia = await Familia.create({
     nombre_representante: payload.nombre_representante,

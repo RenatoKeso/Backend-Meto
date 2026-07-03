@@ -27,17 +27,17 @@ const User = sequelize.define(
       allowNull: false
     },
     role: {
-      type: DataTypes.ENUM('admin', 'user'),
+      type: DataTypes.ENUM('central', 'jefe_cuadrilla', 'voluntario'),
       allowNull: false,
-      defaultValue: 'user'
+      defaultValue: 'voluntario'
     }
   },
   {
     tableName: 'users',
     timestamps: true,
     hooks: {
-      beforeCreate: async (user) =>{
-        if (user.password){
+      beforeCreate: async (user) => {
+        if (user.password) {
           const salt = await bcrypt.genSalt(10);
           user.password = await bcrypt.hash(user.password, salt);
         }
@@ -47,3 +47,7 @@ const User = sequelize.define(
 );
 
 module.exports = User;
+
+//QUE HACE ESTE CODIGO: Este código define un modelo de usuario
+// Tiene los roles de admin, coordinator, staff, volunteer, donor y auditor
+// Antes de crear un usuario, se encripta su contraseña utilizando bcrypt para mayor seguridad.
