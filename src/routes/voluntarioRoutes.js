@@ -6,7 +6,7 @@ const { authorizeRole } = require('../middlewares/roleMiddleware');
 
 // POST /voluntarios - Registro de postulación: queda público (no requiere token).
 // Central revisa y activa la cuenta después mediante PATCH.
-router.post('/', voluntarioController.crearVoluntario);
+router.post('/',verifyToken, voluntarioController.crearVoluntario);
 
 // GET /voluntarios - Solo central
 router.get('/', verifyToken, authorizeRole('central'), voluntarioController.obtenerTodosLosVoluntarios);
