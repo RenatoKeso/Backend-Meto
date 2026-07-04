@@ -130,6 +130,11 @@ const updateVoluntarioSchema = Joi.object({
     "string.max": "El rol_id no puede exceder 12 caracteres",
   }),
   id_datos_medicos: Joi.number().integer().positive().optional(),
+  id_cuadrilla: Joi.number().integer().positive().allow(null).optional().messages({
+    "number.base": "id_cuadrilla debe ser numerico",
+    "number.integer": "id_cuadrilla debe ser un entero",
+    "number.positive": "id_cuadrilla debe ser positivo",
+  }),
   rut: Joi.forbidden().messages({
     "any.unknown": "No puedes modificar el RUT",
   }),
