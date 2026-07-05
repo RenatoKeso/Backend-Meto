@@ -131,6 +131,10 @@ const UsuarioVoluntario = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    id_cuadrilla: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     tableName: "usuarios_voluntarios",
@@ -323,6 +327,9 @@ Proyecto.hasMany(Cuadrilla, { foreignKey: "id_proyecto" });
 
 Cuadrilla.belongsTo(UsuarioVoluntario, { foreignKey: "rut" });
 UsuarioVoluntario.hasMany(Cuadrilla, { foreignKey: "rut" });
+
+UsuarioVoluntario.belongsTo(Cuadrilla, { foreignKey: "id_cuadrilla", as: "cuadrilla" });
+Cuadrilla.hasMany(UsuarioVoluntario, { foreignKey: "id_cuadrilla" });
 
 Reporte.belongsTo(Proyecto, { foreignKey: "id_proyecto" });
 Proyecto.hasMany(Reporte, { foreignKey: "id_proyecto" });
