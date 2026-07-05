@@ -131,6 +131,10 @@ const UsuarioVoluntario = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    id_cuadrilla: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     tableName: "usuarios_voluntarios",
@@ -138,21 +142,7 @@ const UsuarioVoluntario = sequelize.define(
     createdAt: "created_at",
     updatedAt: false,
   },
-  id_datos_medicos: {
-    type: DataTypes.INTEGER,
-    allowNull: true
-  },
-  id_cuadrilla: {
-      type: DataTypes.INTEGER,
-      allowNull: true, // puede ser null si el voluntario todavia no esta asignado a ninguna cuadrilla
-    },
-}, 
-{
-  tableName: 'usuarios_voluntarios',
-  timestamps: true,
-  createdAt: 'created_at',
-  updatedAt: false
-});
+);
 
 const Asistencia = sequelize.define(
   "Asistencia",
@@ -300,9 +290,6 @@ const Alerta = sequelize.define(
   },
 );
 
-// Relationships
-
-// relacion: un voluntario pertenece a una cuadrilla
 UsuarioVoluntario.belongsTo(Cuadrilla, { foreignKey: "id_cuadrilla", as: "cuadrilla" });
 Cuadrilla.hasMany(UsuarioVoluntario, { foreignKey: "id_cuadrilla" });
 
@@ -324,7 +311,6 @@ CapacidadFisica.hasOne(UsuarioVoluntario, {
 });
 
 UsuarioVoluntario.hasMany(Asistencia, { foreignKey: "rut", as: "asistencias" });
-
 Asistencia.belongsTo(UsuarioVoluntario, { foreignKey: "rut" });
 UsuarioVoluntario.hasMany(Asistencia, { foreignKey: "rut" });
 
