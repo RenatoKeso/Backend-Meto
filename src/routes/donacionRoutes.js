@@ -3,11 +3,15 @@ const router = express.Router();
 const donacionController = require('../controllers/donacionController');
 const { verifyToken } = require('../middlewares/authMiddleware');
 const { authorizeRole } = require('../middlewares/roleMiddleware');
+const upload = require('../middlewares/uploadMiddleware');
 
-// POST /donaciones - Cualquiera puede donar, no requiere token
-router.post('/', donacionController.crearDonacion);
+// publica, no requiere login
+router.post('/', upload.single('comprobante'), donacionController.crearDonacion);
 
-// GET /donaciones - Solo central puede ver el historial
+// solo admin
 router.get('/', verifyToken, authorizeRole('central'), donacionController.obtenerDonaciones);
+
+// cambiar estado de una donacion
+router.patch('/:id', verifyToken, authorizeRole('central'), donacionController.cambiarEstado);
 
 module.exports = router;
