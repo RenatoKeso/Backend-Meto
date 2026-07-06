@@ -175,14 +175,4 @@ Cada usuario se autentica con correo y contraseña, obtiene un token JWT, y el s
 
 ---
 
-## 🛠️ Tecnologías
 
-**Backend:** Node.js, Express, Sequelize, PostgreSQL, JWT, bcryptjs, Multer, Joi
-
-**Frontend:** React, React Router
-
----
-
-## 👤 Autor
-
-Renato Keso — Módulo de autenticación y gestión de roles.
