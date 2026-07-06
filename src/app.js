@@ -7,6 +7,7 @@ const actividadRoutes = require('./routes/actividadRoutes');
 const donacionRoutes = require('./routes/donacionRoutes');
 const { verifyToken } = require('./middlewares/authMiddleware');
 const { authorizeRole } = require('./middlewares/roleMiddleware');
+const cuadrillaRoutes = require('./routes/cuadrillaRoutes');
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use('/api/voluntario', voluntarioRoutes);
 app.use('/api/familias', familiaRoutes);
 app.use('/api/actividades', actividadRoutes);
 app.use('/api/donaciones', donacionRoutes);
+app.use('/api/cuadrillas', cuadrillaRoutes);
 
 // Ruta de salud
 app.get('/health', (req, res) => {

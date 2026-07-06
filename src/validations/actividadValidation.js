@@ -42,6 +42,12 @@ const edadRequeridaRule = Joi.number().integer().min(0).max(120).messages({
   "number.max": "La edad no puede superar 120",
 });
 
+const idCuadrillaRule = Joi.number().integer().positive().messages({
+  "number.base": "El id_cuadrilla debe ser un número",
+  "number.integer": "El id_cuadrilla debe ser un número entero",
+  "number.positive": "El id_cuadrilla debe ser positivo",
+});
+
 const validarRangoEdad = (value, helpers) => {
   if (
     value.edad_minima !== undefined &&
@@ -69,6 +75,9 @@ const createActividadSchema = Joi.object({
     "any.required": "La hora es obligatoria",
   }),
   estado: estadoRule.optional().default("pendiente"),
+  id_cuadrilla: idCuadrillaRule.required().messages({
+    "any.required": "La cuadrilla es obligatoria",
+  }),
   edad_minima: edadRequeridaRule.optional(),
   edad_maxima: edadRequeridaRule.optional(),
   movilidad_requerida: nivelRequeridoRule.optional(),
@@ -82,6 +91,7 @@ const updateActividadSchema = Joi.object({
   fecha: fechaRule.optional(),
   hora: horaRule.optional(),
   estado: estadoRule.optional(),
+  id_cuadrilla: idCuadrillaRule.optional(),
   edad_minima: edadRequeridaRule.optional().allow(null),
   edad_maxima: edadRequeridaRule.optional().allow(null),
   movilidad_requerida: nivelRequeridoRule.optional().allow(null),
