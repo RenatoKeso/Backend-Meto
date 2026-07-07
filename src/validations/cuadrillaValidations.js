@@ -26,4 +26,14 @@ id_proyecto: Joi.number().integer().positive().optional().allow(null)
 'object.min': 'Debe enviar al menos un campo para actualizar'
 });
 
-module.exports = { createCuadrillaSchema, updateCuadrillaSchema };
+const asignarVoluntarioSchema = Joi.object({
+rut: Joi.string()
+    .pattern(/^\d{7,8}-[kK\d]$/)
+    .required()
+    .messages({
+        'string.pattern.base': 'El RUT debe tener el formato XXXXXXXX-X',
+        'any.required': 'El RUT del voluntario es obligatorio'
+    })
+});
+
+module.exports = { createCuadrillaSchema, updateCuadrillaSchema, asignarVoluntarioSchema };

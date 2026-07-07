@@ -3,8 +3,21 @@ const {
   UsuarioVoluntario,
   CapacidadFisica,
 } = require("../entities/VoluntarioModels");
+const userRepository = require("../repositories/userRepository");
 
 const SALT_ROUNDS = 10;
+
+// Mapeo entre el rol de negocio (cargo dentro de la organización, guardado
+// en rol_id) y el rol de sistema (permisos de la app, guardado en users.role).
+// Definido junto al usuario: coordinadores -> central, jefe de cuadrilla ->
+// jefe_cuadrilla, el resto -> voluntario.
+const ROL_A_SISTEMA = {
+  ROL_GEN: "central",
+  ROL_ZON: "central",
+  ROL_JEF: "jefe_cuadrilla",
+  ROL_CAP: "voluntario",
+  ROL_OTR: "voluntario",
+};
 
 const buildError = (message, statusCode = 500, details = null) => {
   const error = new Error(message);
@@ -95,12 +108,15 @@ const updateVoluntario = async (rut, payload) => {
   }
 
   const dataToUpdate = { ...payload };
+  const emailAnterior = voluntario.email;
+  let nuevoPasswdHash = null;
 
   if (dataToUpdate.password) {
-    dataToUpdate.passwd_hash = await bcrypt.hash(
+    nuevoPasswdHash = await bcrypt.hash(
       dataToUpdate.password,
       SALT_ROUNDS,
     );
+    dataToUpdate.passwd_hash = nuevoPasswdHash;
     delete dataToUpdate.password;
   }
 
@@ -115,6 +131,16 @@ const updateVoluntario = async (rut, payload) => {
 
   // Update the record
   await voluntario.update(dataToUpdate);
+
+  // Si el voluntario ya tiene una cuenta de acceso en `users` (fue activado),
+  // se mantiene sincronizada con el email/contraseña nuevos para que el login
+  // no quede con datos desactualizados.
+  const usuarioSistema = await userRepository.findByEmail(emailAnterior);
+  if (usuarioSistema) {
+    if (dataToUpdate.email) usuarioSistema.email = dataToUpdate.email;
+    if (nuevoPasswdHash) usuarioSistema.password = nuevoPasswdHash;
+    if (dataToUpdate.email || nuevoPasswdHash) await usuarioSistema.save();
+  }
 
   return sanitizeVoluntario(voluntario);
 };
@@ -176,6 +202,25 @@ const activarVoluntario = async (rut, rol_id) => {
   }
 
   await voluntario.update({ activo: true, rol_id });
+
+  const roleSistema = ROL_A_SISTEMA[rol_id] || 'voluntario';
+
+  // Crea o actualiza la fila correspondiente en la tabla `users`, que es
+  // la que realmente usa authService para el login y el control de permisos.
+  // Se reutiliza el mismo passwd_hash (bcrypt) para no pedirle de nuevo la
+  // contraseña al voluntario.
+  const usuarioExistente = await userRepository.findByEmail(voluntario.email);
+  if (usuarioExistente) {
+    usuarioExistente.role = roleSistema;
+    await usuarioExistente.save();
+  } else {
+    await userRepository.create({
+      name: `${voluntario.nombre} ${voluntario.apellido}`,
+      email: voluntario.email,
+      password: voluntario.passwd_hash,
+      role: roleSistema,
+    });
+  }
 
   return sanitizeVoluntario(voluntario);
 };

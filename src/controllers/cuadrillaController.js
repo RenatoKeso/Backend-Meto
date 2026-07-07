@@ -1,6 +1,6 @@
 const { sendSuccess, sendError } = require('../handlers/responseHandler');
 const cuadrillaService = require('../services/cuadrillaService');
-const { createCuadrillaSchema } = require('../validations/cuadrillaValidations');
+const { createCuadrillaSchema, asignarVoluntarioSchema } = require('../validations/cuadrillaValidations');
 
 const parseValidationError = (error) => {
     if (!error || !error.details) return [];
@@ -39,4 +39,46 @@ const obtenerTodasLasCuadrillas = async (req, res) => {
 }
 };
 
-module.exports = { crearCuadrilla, obtenerTodasLasCuadrillas };
+const obtenerCuadrillaPorId = async (req, res) => {
+    try {
+        const cuadrilla = await cuadrillaService.obtenerCuadrillaPorId(req.params.id);
+        return sendSuccess(res, 200, 'Cuadrilla obtenida correctamente', cuadrilla);
+    } catch (serviceError) {
+        return handleServiceError(res, serviceError);
+    }
+};
+
+const asignarVoluntario = async (req, res) => {
+    const { error, value } = asignarVoluntarioSchema.validate(req.body, {
+        abortEarly: false,
+        stripUnknown: true
+    });
+
+    if (error) {
+        return sendError(res, 400, 'Datos de entrada inválidos', parseValidationError(error));
+    }
+
+    try {
+        const voluntario = await cuadrillaService.asignarVoluntario(req.params.id, value.rut);
+        return sendSuccess(res, 200, 'Voluntario asignado correctamente', voluntario);
+    } catch (serviceError) {
+        return handleServiceError(res, serviceError);
+    }
+};
+
+const quitarVoluntario = async (req, res) => {
+    try {
+        const voluntario = await cuadrillaService.quitarVoluntario(req.params.rut);
+        return sendSuccess(res, 200, 'Voluntario removido de la cuadrilla correctamente', voluntario);
+    } catch (serviceError) {
+        return handleServiceError(res, serviceError);
+    }
+};
+
+module.exports = {
+    crearCuadrilla,
+    obtenerTodasLasCuadrillas,
+    obtenerCuadrillaPorId,
+    asignarVoluntario,
+    quitarVoluntario
+};
