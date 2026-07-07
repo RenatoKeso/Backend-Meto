@@ -1,8 +1,8 @@
 const { Familia, MiembroFamilia } = require('../entities/FamiliaModels');
 
-// ─────────────────────────────────────────────
+
 // Helpers (mismo patrón que voluntarioService)
-// ─────────────────────────────────────────────
+
 const buildError = (message, statusCode = 500, details = null) => {
   const error = new Error(message);
   error.statusCode = statusCode;
@@ -10,9 +10,9 @@ const buildError = (message, statusCode = 500, details = null) => {
   return error;
 };
 
-// ─────────────────────────────────────────────
+
 // CREATE — Registrar una nueva familia
-// ─────────────────────────────────────────────
+
 const createFamilia = async (payload) => {
   // Verificar que no exista otra familia con el mismo RUT representante
   const familiaExistente = await Familia.findOne({
@@ -23,7 +23,7 @@ const createFamilia = async (payload) => {
     throw buildError('Ya existe una familia registrada con ese RUT de representante', 409);
   }
 
-  const direccionExistente = await Familia.findOne({
+  const direccionExistente = await Familia.findOne({ 
 
     where: {
       calle: payload.calle,
@@ -80,9 +80,9 @@ const getAllFamilias = async ({ incluirInactivas = false } = {}) => {
   return familias;
 };
 
-// ─────────────────────────────────────────────
+
 // READ ONE — Consultar una familia por ID
-// ─────────────────────────────────────────────
+
 const getFamiliaById = async (id_familia) => {
   const familia = await Familia.findOne({
     where: { id_familia },
@@ -96,10 +96,10 @@ const getFamiliaById = async (id_familia) => {
   return familia;
 };
 
-// ─────────────────────────────────────────────
+
 // UPDATE — Actualizar datos de una familia
 // (solo usuarios autorizados llegan aquí, el control es en la ruta)
-// ─────────────────────────────────────────────
+
 const updateFamilia = async (id_familia, payload) => {
   const familia = await Familia.findOne({ where: { id_familia } });
 
@@ -139,10 +139,10 @@ const updateFamilia = async (id_familia, payload) => {
   return getFamiliaById(id_familia);
 };
 
-// ─────────────────────────────────────────────
+
 // DELETE — Borrado lógico (activo = false)
 // (mismo patrón que deleteVoluntario)
-// ─────────────────────────────────────────────
+
 const deleteFamilia = async (id_familia) => {
   const familia = await Familia.findOne({ where: { id_familia } });
 
