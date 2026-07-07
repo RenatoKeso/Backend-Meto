@@ -7,89 +7,100 @@ import { voluntarioApi } from '../api/voluntarioApi';
  * Accesible por Central (cualquier voluntario) y por el propio Voluntario (sus datos).
  */
 const EditarVoluntario = () => {
-const { rut } = useParams();
-const navigate = useNavigate();
+  const { rut } = useParams();
+  const navigate = useNavigate();
 
-const [form, setForm] = useState({
+  const [form, setForm] = useState({
     nombre: '',
     apellido: '',
     email: '',
     edad: '',
     contacto: '',
     contacto_emergencia: '',
-    clasificacion: ''
-    });
+    clasificacion: '',
+    password: ''
+  });
 
-const [cargando, setCargando] = useState(true);
-const [enviando, setEnviando] = useState(false);
-const [mensaje, setMensaje] = useState('');
-const [errores, setErrores] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [enviando, setEnviando] = useState(false);
+  const [mensaje, setMensaje] = useState('');
+  const [errores, setErrores] = useState([]);
 
-useEffect(() => {
+  useEffect(() => {
     const cargar = async () => {
-    try {
+      try {
         const data = await voluntarioApi.obtenerPorRut(rut);
         const v = data.data || data;
         setForm({
-        nombre: v.nombre || '',
-        apellido: v.apellido || '',
-        email: v.email || '',
-        edad: v.edad ?? '',
-        contacto: v.contacto || '',
-        contacto_emergencia: v.contacto_emergencia || '',
-        clasificacion: v.clasificacion || ''
+          nombre: v.nombre || '',
+          apellido: v.apellido || '',
+          email: v.email || '',
+          edad: v.edad ?? '',
+          contacto: v.contacto || '',
+          contacto_emergencia: v.contacto_emergencia || '',
+          clasificacion: v.clasificacion || '',
+          password: ''
         });
-        } catch (err) {
+      } catch (err) {
         setErrores([err.message]);
-    } finally {
+      } finally {
         setCargando(false);
-    }
+      }
     };
 
     cargar();
-}, [rut]);
+  }, [rut]);
 
-const handleChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-};
+  };
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setMensaje('');
     setErrores([]);
     setEnviando(true);
 
-    try {
-        await voluntarioApi.actualizar(rut, {
-        ...form,
-        edad: Number(form.edad)
-    });
-        setMensaje('Datos actualizados correctamente.');
-        setTimeout(() => navigate('/voluntarios'), 800);
-    } catch (err) {
-    setErrores(err.data?.error ? [].concat(err.data.error) : [err.message]);
-    } finally {
-        setEnviando(false);
+    const payload = {
+      ...form,
+      edad: Number(form.edad)
+    };
+
+    // Solo se envía la contraseña si se escribió algo; si se deja vacía,
+    // no se toca la contraseña actual del voluntario.
+    if (!payload.password) {
+      delete payload.password;
     }
-};
 
-if (cargando) return <div className="page"><p>Cargando...</p></div>;
+    try {
+      await voluntarioApi.actualizar(rut, payload);
+      setMensaje('Datos actualizados correctamente.');
+      setForm((prev) => ({ ...prev, password: '' }));
+      setTimeout(() => navigate('/voluntarios'), 800);
+    } catch (err) {
+      setErrores(err.data?.error ? [].concat(err.data.error) : [err.message]);
+    } finally {
+      setEnviando(false);
+    }
+  };
 
-return (
+  if (cargando) return <div className="page"><p>Cargando...</p></div>;
+
+  return (
     <div className="page">
-    <Link to="/voluntarios">← Volver al listado</Link>
-    <h1 style={{ marginTop: '0.5rem' }}>Editar voluntario</h1>
-    <p style={{ color: 'var(--ink-soft)' }}>RUT: {rut}</p>
+      <Link to="/voluntarios">← Volver al listado</Link>
+      <h1 style={{ marginTop: '0.5rem' }}>Editar voluntario</h1>
+      <p style={{ color: 'var(--ink-soft)' }}>RUT: {rut}</p>
 
-    {mensaje && <p className="form-success">{mensaje}</p>}
-    {errores.length > 0 && (
+      {mensaje && <p className="form-success">{mensaje}</p>}
+      {errores.length > 0 && (
         <ul className="form-error">
-        {errores.map((e, i) => <li key={i}>{e}</li>)}
+          {errores.map((e, i) => <li key={i}>{e}</li>)}
         </ul>
-    )}
+      )}
 
-    <form className="card" onSubmit={handleSubmit} style={{ maxWidth: 460 }}>
+      <form className="card" onSubmit={handleSubmit} style={{ maxWidth: 460 }}>
         <label>Nombre</label>
         <input name="nombre" value={form.nombre} onChange={handleChange} required />
 
@@ -111,12 +122,22 @@ return (
         <label>Clasificación</label>
         <input name="clasificacion" value={form.clasificacion} onChange={handleChange} />
 
+        <label>Nueva contraseña (opcional)</label>
+        <input
+          type="password"
+          name="password"
+          value={form.password}
+          onChange={handleChange}
+          placeholder="Dejar en blanco para no cambiarla"
+          minLength={8}
+        />
+
         <button type="submit" disabled={enviando} style={{ marginTop: '0.5rem' }}>
-            {enviando ? 'Guardando...' : 'Guardar cambios'}
+          {enviando ? 'Guardando...' : 'Guardar cambios'}
         </button>
-        </form>
+      </form>
     </div>
-    );
+  );
 };
 
 export default EditarVoluntario;

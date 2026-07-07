@@ -18,6 +18,7 @@ import ActividadesListado from './pages/actividades/ActividadesListado';
 import RegistrarActividad from './pages/actividades/RegistrarActividad';
 import ActividadDetalle from './pages/actividades/ActividadDetalle';
 import CuadrillasListado from './pages/cuadrillas/CuadrillasListado';
+import CuadrillaDetalle from './pages/cuadrillas/CuadrillaDetalle';
 import Donacion from './pages/Donacion';
 import HistorialDonaciones from './pages/central/HistorialDonaciones';
 
@@ -122,6 +123,14 @@ function App() {
             element={
               <ProtectedRoute roles={['central']}>
                 <Layout><CuadrillasListado /></Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/cuadrillas/:id"
+            element={
+              <ProtectedRoute roles={['central']}>
+                <Layout><CuadrillaDetalle /></Layout>
               </ProtectedRoute>
             }
           />

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { cuadrillaApi } from '../../api/cuadrillaApi';
 import { voluntarioApi } from '../../api/voluntarioApi';
 
@@ -7,6 +8,7 @@ import { voluntarioApi } from '../../api/voluntarioApi';
  * Solo Central puede crear cuadrillas.
  * El jefe de cuadrilla se selecciona de un desplegable con los voluntarios existentes,
  * ya que "rut" es una llave foránea hacia usuarios_voluntarios y debe existir previamente.
+ * Los miembros (voluntarios que integran la cuadrilla) se asignan desde la pantalla de detalle.
  */
 const CuadrillasListado = () => {
   const [cuadrillas, setCuadrillas] = useState([]);
@@ -112,6 +114,7 @@ const CuadrillasListado = () => {
               <th>ID</th>
               <th>Nombre</th>
               <th>RUT jefe</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -120,6 +123,11 @@ const CuadrillasListado = () => {
                 <td>{c.id_cuadrilla}</td>
                 <td>{c.nombre || '—'}</td>
                 <td>{c.rut || '—'}</td>
+                <td>
+                  <Link to={`/cuadrillas/${c.id_cuadrilla}`}>
+                    <button type="button">Ver / Asignar voluntarios</button>
+                  </Link>
+                </td>
               </tr>
             ))}
           </tbody>

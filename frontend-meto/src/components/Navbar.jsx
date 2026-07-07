@@ -40,6 +40,7 @@ const Navbar = () => {
             <Link to="/central/usuarios">Usuarios y roles</Link>
             <Link to="/voluntarios">Voluntarios</Link>
             <Link to="/familias">Familias</Link>
+            <Link to="/cuadrillas">Cuadrillas</Link>
             <Link to="/actividades">Actividades</Link>
             <Link to="/donaciones/historial">Donaciones</Link>
           </>
