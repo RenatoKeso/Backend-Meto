@@ -1,5 +1,6 @@
 const { sendSuccess, sendError } = require('../handlers/responseHandler');
 const donacionService = require('../services/donacionService');
+const { crearDonacionSchema } = require('../validations/donacionValidations');
 
 const manejarError = (res, error) => {
   const statusCode = error.statusCode || 500;
@@ -7,10 +8,24 @@ const manejarError = (res, error) => {
 };
 
 const crearDonacion = async (req, res) => {
+  // req.body llega como strings porque viene de un form-data (por el archivo adjunto)
+  const { error, value } = crearDonacionSchema.validate(req.body, {
+    abortEarly: false,
+    stripUnknown: true
+  });
+
+  if (error) {
+    return sendError(res, 400, 'Datos de la donacion invalidos', error.details.map(d => d.message));
+  }
+
+  if (!req.file) {
+    return sendError(res, 400, 'Debes adjuntar el comprobante de la transferencia (JPG, PNG o PDF)');
+  }
+
   try {
     const datos = {
-      ...req.body,
-      comprobante_url: req.file ? req.file.filename : null
+      ...value,
+      comprobante_url: req.file.filename
     };
     const donacion = await donacionService.crearDonacion(datos);
     return sendSuccess(res, 201, 'Donacion registrada', donacion);

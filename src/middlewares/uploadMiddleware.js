@@ -11,6 +11,21 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage });
+// solo dejamos pasar comprobantes en imagen o pdf, como pide el requisito
+const tiposPermitidos = ['image/jpeg', 'image/png', 'application/pdf'];
+
+const filtrarArchivo = (req, file, cb) => {
+  if (tiposPermitidos.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error('El comprobante debe ser JPG, PNG o PDF'));
+  }
+};
+
+const upload = multer({
+  storage,
+  fileFilter: filtrarArchivo,
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB, para que no suban un video de comprobante
+});
 
 module.exports = upload;

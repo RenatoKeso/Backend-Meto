@@ -25,8 +25,13 @@ const handleSubmit = async (e) => {
     setMensaje('');
     setErrores([]);
 
-    if (!monto || Number(monto) <= 0) {
-    setErrores(['El monto debe ser mayor a cero']);
+    if (!monto || Number(monto) < 1000) {
+    setErrores(['El monto minimo para donar es $1.000']);
+    return;
+    }
+
+    if (!comprobante) {
+    setErrores(['Debes adjuntar el comprobante de la transferencia']);
     return;
     }
 
@@ -94,20 +99,22 @@ return (
         <label style={{ marginTop: '0.75rem' }}>Monto (CLP)</label>
         <input
         type="number"
-        min="1"
+        min="1000"
         value={monto}
         onChange={(e) => setMonto(e.target.value)}
         required
         />
 
+
         {/* El campo de archivo ahora va SIEMPRE en la misma posición del árbol,
             antes de los campos condicionales, para que React no lo desmonte
             (y pierda el archivo seleccionado) al marcar/desmarcar "anónimo". */}
-        <label>Comprobante de transferencia (opcional, JPG/PNG/PDF)</label>
+        <label>Comprobante de transferencia (JPG/PNG/PDF)</label>
         <input
         type="file"
         accept=".jpg,.jpeg,.png,.pdf"
         onChange={(e) => setComprobante(e.target.files[0])}
+        required
         />
         {comprobante && (
         <p style={{ fontSize: '0.85rem', color: '#1a7f37', margin: '0.25rem 0 0.75rem' }}>
