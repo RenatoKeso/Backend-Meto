@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { voluntarioApi } from '../api/voluntarioApi';
 
 const Voluntarios = () => {
@@ -6,20 +7,33 @@ const Voluntarios = () => {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    const cargar = async () => {
-      try {
-        const data = await voluntarioApi.listar();
-        setVoluntarios(data.data || []);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setCargando(false);
-      }
-    };
+  const cargar = async () => {
+    setCargando(true);
+    setError('');
+    try {
+      const data = await voluntarioApi.listar();
+      setVoluntarios(data.data || []);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setCargando(false);
+    }
+  };
 
+  useEffect(() => {
     cargar();
   }, []);
+
+  const handleEliminar = async (rut, nombre) => {
+    if (!window.confirm(`¿Desactivar a ${nombre}? Podrás reactivarlo más adelante si es necesario.`)) return;
+
+    try {
+      await voluntarioApi.eliminar(rut);
+      cargar();
+    } catch (err) {
+      alert(err.message);
+    }
+  };
 
   return (
     <div className="page">
@@ -40,6 +54,7 @@ const Voluntarios = () => {
               <th>Edad</th>
               <th>Contacto</th>
               <th>Clasificación</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -51,6 +66,18 @@ const Voluntarios = () => {
                 <td>{v.edad}</td>
                 <td>{v.contacto}</td>
                 <td>{v.clasificacion}</td>
+                <td style={{ display: 'flex', gap: '0.5rem' }}>
+                  <Link to={`/voluntarios/${v.rut}/editar`}>
+                    <button type="button">Editar</button>
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => handleEliminar(v.rut, `${v.nombre} ${v.apellido}`)}
+                    style={{ background: '#d92626' }}
+                  >
+                    Desactivar
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>

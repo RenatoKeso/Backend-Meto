@@ -10,8 +10,10 @@ import Postulantes from './pages/central/Postulantes';
 import GestionUsuarios from './pages/central/GestionUsuarios';
 import Postulacion from './pages/Postulacion';
 import Voluntarios from './pages/Voluntarios';
+import EditarVoluntario from './pages/EditarVoluntario';
 import FamiliasListado from './pages/familias/FamiliasListado';
 import RegistrarFamilia from './pages/familias/RegistrarFamilia';
+import EditarFamilia from './pages/familias/EditarFamilia';
 import ActividadesListado from './pages/actividades/ActividadesListado';
 import RegistrarActividad from './pages/actividades/RegistrarActividad';
 import ActividadDetalle from './pages/actividades/ActividadDetalle';
@@ -61,6 +63,14 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/voluntarios/:rut/editar"
+            element={
+              <ProtectedRoute roles={['central', 'jefe_cuadrilla']}>
+                <Layout><EditarVoluntario /></Layout>
+              </ProtectedRoute>
+            }
+          />
 
           {/* Rutas exclusivas de Central: gestión de roles */}
           <Route
@@ -94,6 +104,14 @@ function App() {
             element={
               <ProtectedRoute roles={['central']}>
                 <Layout><RegistrarFamilia /></Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/familias/:id/editar"
+            element={
+              <ProtectedRoute roles={['central']}>
+                <Layout><EditarFamilia /></Layout>
               </ProtectedRoute>
             }
           />
