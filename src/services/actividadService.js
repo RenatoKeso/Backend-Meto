@@ -15,6 +15,7 @@ const CrearActividad = async (payload) => {
     hora,
     estado,
     id_usuario,
+    id_cuadrilla,
     edad_minima,
     edad_maxima,
     movilidad_requerida,
@@ -26,6 +27,10 @@ const CrearActividad = async (payload) => {
     throw buildError("El nombre, la fecha y la hora son obligatorios", 400);
   }
 
+  if (!id_cuadrilla) {
+    throw buildError("La cuadrilla es obligatoria", 400);
+  }
+
   const nuevaActividad = await Actividad.create({
     nombre,
     descripcion,
@@ -33,6 +38,7 @@ const CrearActividad = async (payload) => {
     hora,
     estado: estado || "pendiente",
     id_usuario,
+    id_cuadrilla,
     edad_minima: edad_minima ?? null,
     edad_maxima: edad_maxima ?? null,
     movilidad_requerida: movilidad_requerida ?? null,
@@ -79,6 +85,7 @@ const ModificarActividad = async (id, payload) => {
     fecha,
     hora,
     estado,
+    id_cuadrilla,
     edad_minima,
     edad_maxima,
     movilidad_requerida,
@@ -96,6 +103,7 @@ const ModificarActividad = async (id, payload) => {
     fecha,
     hora,
     estado,
+    id_cuadrilla: id_cuadrilla ?? actividad.id_cuadrilla,
     edad_minima,
     edad_maxima,
     movilidad_requerida,

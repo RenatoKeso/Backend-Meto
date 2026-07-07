@@ -1,9 +1,14 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/configDb");
+const { Cuadrilla } = require("./VoluntarioModels");
 
 const Actividad = sequelize.define(
   "Actividad",
   {
+    id_cuadrilla:{
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     id_actividad: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -68,5 +73,18 @@ const Actividad = sequelize.define(
     timestamps: true,
   },
 );
-
+Actividad.belongsTo(Cuadrilla, { foreignKey: "id_cuadrilla" });
+Cuadrilla.hasMany(Actividad, { foreignKey: "id_cuadrilla" });
 module.exports = { Actividad };
+
+
+
+
+
+
+
+
+
+
+
+

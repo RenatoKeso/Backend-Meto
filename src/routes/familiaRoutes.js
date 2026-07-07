@@ -11,7 +11,7 @@ const ROLES_CONSULTA = ['central', 'jefe_cuadrilla', 'voluntario'];
 router.get('/test', (req, res) => res.json({ message: 'Familia Router is working!' }));
 
 // POST /familias — Registrar nueva familia (solo central)
-router.post('/', verifyToken, authorizeRole('central'), familiaController.crearFamilia);
+router.post('/', verifyToken, authorizeRole('central','jefe_cuadrilla'), familiaController.crearFamilia);
 
 // GET /familias — Consultar todas las familias (los 3 roles)
 router.get('/', verifyToken, authorizeRole(...ROLES_CONSULTA), familiaController.obtenerTodasLasFamilias);

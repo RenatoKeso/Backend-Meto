@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const userRepository = require('../repositories/userRepository');
 const configEnv = require('../config/configEnv');
+const { UsuarioVoluntario, Cuadrilla } = require('../entities/VoluntarioModels');
 
 const login = async (email, password) => {
   const user = await userRepository.findByEmail(email);
@@ -10,11 +11,28 @@ const login = async (email, password) => {
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) throw new Error('Correo o contraseña incorrectos');
 
-  const payload = { id: user.id, role: user.role, email: user.email };
+  // Buscamos si este usuario corresponde a un voluntario/jefe de cuadrilla
+  // cruzando por email, para obtener su id_cuadrilla si aplica.
+  let id_cuadrilla = null;
+  const voluntario = await UsuarioVoluntario.findOne({ where: { email: user.email } });
+
+  if (voluntario) {
+    const cuadrilla = await Cuadrilla.findOne({ where: { rut: voluntario.rut } });
+    if (cuadrilla) {
+      id_cuadrilla = cuadrilla.id_cuadrilla;
+    }
+  }
+
+  const payload = {
+    id: user.id,
+    role: user.role,
+    email: user.email,
+    id_cuadrilla
+  };
   const token = jwt.sign(payload, configEnv.jwt.secret, { expiresIn: '2h' });
 
   return {
-    user: { id: user.id, name: user.name, email: user.email, role: user.role },
+    user: { id: user.id, name: user.name, email: user.email, role: user.role, id_cuadrilla },
     token
   };
 };

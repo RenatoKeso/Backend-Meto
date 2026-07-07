@@ -31,6 +31,15 @@ const Donacion = sequelize.define('Donacion', {
     type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: false
+  },
+  comprobante_url: {
+    type: DataTypes.STRING(255),
+    allowNull: false
+  },
+  estado: {
+    type: DataTypes.ENUM('pendiente', 'validada', 'rechazada'),
+    allowNull: false,
+    defaultValue: 'pendiente'
   }
 }, {
   tableName: 'donaciones',

@@ -290,9 +290,11 @@ const Alerta = sequelize.define(
   },
 );
 
-// Relationships
-UsuarioVoluntario.belongsTo(Rol, { foreignKey: "rol_id", as: "rol" });
-Rol.hasMany(UsuarioVoluntario, { foreignKey: "rol_id" });
+UsuarioVoluntario.belongsTo(Cuadrilla, { foreignKey: "id_cuadrilla", as: "cuadrilla" });
+Cuadrilla.hasMany(UsuarioVoluntario, { foreignKey: "id_cuadrilla" });
+
+UsuarioVoluntario.belongsTo(Rol, { foreignKey: 'rol_id', as: 'rol' });
+Rol.hasMany(UsuarioVoluntario, { foreignKey: 'rol_id' });
 
 UsuarioVoluntario.belongsTo(DatosMedicos, {
   foreignKey: "id_datos_medicos",
@@ -309,7 +311,6 @@ CapacidadFisica.hasOne(UsuarioVoluntario, {
 });
 
 UsuarioVoluntario.hasMany(Asistencia, { foreignKey: "rut", as: "asistencias" });
-
 Asistencia.belongsTo(UsuarioVoluntario, { foreignKey: "rut" });
 UsuarioVoluntario.hasMany(Asistencia, { foreignKey: "rut" });
 

@@ -3,11 +3,26 @@ const router = express.Router();
 const donacionController = require('../controllers/donacionController');
 const { verifyToken } = require('../middlewares/authMiddleware');
 const { authorizeRole } = require('../middlewares/roleMiddleware');
+const upload = require('../middlewares/uploadMiddleware');
 
-// POST /donaciones - Cualquiera puede donar, no requiere token
-router.post('/', donacionController.crearDonacion);
+// Multer tira el error de tipo/tamaño antes de llegar al controller,
+// asi que lo atajamos aca para que la respuesta sea JSON y no el error feo de express por defecto
+const subirComprobante = (req, res, next) => {
+  upload.single('comprobante')(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ success: false, mensaje: err.message });
+    }
+    next();
+  });
+};
 
-// GET /donaciones - Solo central puede ver el historial
+// publica, no requiere login
+router.post('/', subirComprobante, donacionController.crearDonacion);
+
+// solo admin
 router.get('/', verifyToken, authorizeRole('central'), donacionController.obtenerDonaciones);
+
+// cambiar estado de una donacion
+router.patch('/:id', verifyToken, authorizeRole('central'), donacionController.cambiarEstado);
 
 module.exports = router;
