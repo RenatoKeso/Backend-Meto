@@ -5,8 +5,19 @@ const { verifyToken } = require('../middlewares/authMiddleware');
 const { authorizeRole } = require('../middlewares/roleMiddleware');
 const upload = require('../middlewares/uploadMiddleware');
 
+// Multer tira el error de tipo/tamaño antes de llegar al controller,
+// asi que lo atajamos aca para que la respuesta sea JSON y no el error feo de express por defecto
+const subirComprobante = (req, res, next) => {
+  upload.single('comprobante')(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ success: false, mensaje: err.message });
+    }
+    next();
+  });
+};
+
 // publica, no requiere login
-router.post('/', upload.single('comprobante'), donacionController.crearDonacion);
+router.post('/', subirComprobante, donacionController.crearDonacion);
 
 // solo admin
 router.get('/', verifyToken, authorizeRole('central'), donacionController.obtenerDonaciones);
