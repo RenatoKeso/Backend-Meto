@@ -19,8 +19,8 @@ router.get('/', verifyToken, authorizeRole(...ROLES_CONSULTA), familiaController
 // GET /familias/:id — Consultar una familia por ID (los 3 roles)
 router.get('/:id', verifyToken, authorizeRole(...ROLES_CONSULTA), familiaController.obtenerFamiliaPorId);
 
-// PATCH /familias/:id — Actualizar familia (solo central)
-router.patch('/:id', verifyToken, authorizeRole('central'), familiaController.actualizarFamilia);
+// PATCH /familias/:id — Actualizar familia (central y jefe_cuadrilla)
+router.patch('/:id', verifyToken, authorizeRole('central','jefe_cuadrilla'), familiaController.actualizarFamilia);
 
 // DELETE /familias/:id — Borrado lógico (solo central)
 router.delete('/:id', verifyToken, authorizeRole('central'), familiaController.eliminarFamilia);
