@@ -10,13 +10,6 @@ const ROL_LABEL = {
 
 const NIVELES = ['', 'baja', 'media', 'alta'];
 
-const getIniciales = (nombre = '') => {
-  const partes = nombre.trim().split(' ').filter(Boolean);
-  if (partes.length === 0) return '?';
-  if (partes.length === 1) return partes[0][0].toUpperCase();
-  return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
-};
-
 const CAPACIDAD_LABEL = {
   movilidad: 'Movilidad',
   resistencia_fisica: 'Resistencia física',
@@ -26,7 +19,6 @@ const CAPACIDAD_LABEL = {
 const Perfil = () => {
   const { user, loading } = useAuth();
 
-  const [voluntarioData, setVoluntarioData] = useState(null);
   const [loadingVoluntario, setLoadingVoluntario] = useState(true);
 
   const [capForm, setCapForm] = useState({
@@ -52,8 +44,6 @@ const Perfil = () => {
       try {
         const data = await voluntarioApi.obtenerPorRut(user.rut);
         const v = data.data || data;
-        setVoluntarioData(v);
-
         const cap = v.capacidad_fisica || {};
         setCapForm({
           movilidad: cap.movilidad || '',
@@ -99,7 +89,6 @@ const Perfil = () => {
     try {
       const result = await voluntarioApi.actualizarCapacidades(user.rut, payload);
       const updated = result.data || result;
-      setVoluntarioData(updated);
       const cap = updated.capacidad_fisica || {};
       setCapForm({
         movilidad: cap.movilidad || '',
