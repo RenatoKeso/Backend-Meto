@@ -103,7 +103,7 @@ function App() {
           <Route
             path="/familias/nueva"
             element={
-              <ProtectedRoute roles={['central']}>
+              <ProtectedRoute roles={['central', 'jefe_cuadrilla']}>
                 <Layout><RegistrarFamilia /></Layout>
               </ProtectedRoute>
             }
@@ -111,7 +111,7 @@ function App() {
           <Route
             path="/familias/:id/editar"
             element={
-              <ProtectedRoute roles={['central']}>
+              <ProtectedRoute roles={['central', 'jefe_cuadrilla']}>
                 <Layout><EditarFamilia /></Layout>
               </ProtectedRoute>
             }
