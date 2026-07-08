@@ -21,9 +21,9 @@ const Login = () => {
 
       // Redirige según el rol del usuario autenticado
       if (user.role === 'central') {
-        navigate('/central/dashboard');
+        navigate('/central/postulantes');
       } else if (user.role === 'jefe_cuadrilla') {
-        navigate('/cuadrilla/dashboard');
+        navigate('/actividades');
       } else {
         navigate('/perfil');
       }

@@ -33,7 +33,7 @@ router.get(
 );
 
 // POST /actividades/:id/postular - El voluntario se postula o acepta la invitación (solo si es elegible)
-router.post("/:id/postular", postulacionController.postularOAceptar);
+router.post("/:id/postular", verifyToken, postulacionController.postularOAceptar);
 
 // POST /actividades/:id/asignar - Asignación definitiva del voluntario a la actividad (organización)
 router.post(
