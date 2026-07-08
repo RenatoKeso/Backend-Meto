@@ -29,10 +29,9 @@ const createDefaultUsers = async () => {
 
 const seedVolunteers = async () => {
   const roles = [
-    { rol_id: "ROL_GEN", nombre: "Coordinador General" },
-    { rol_id: "ROL_ZON", nombre: "Coordinador Zonal" },
-    { rol_id: "ROL_JEF", nombre: "Jefe de Cuadrilla" },
-    { rol_id: "ROL_CAP", nombre: "Capataz" },
+    { rol_id: "ROL_CEN", nombre: "central" },
+    { rol_id: "ROL_JEF", nombre: "jefe de cuadrilla" },
+    { rol_id: "ROL_VOL", nombre: "voluntario" },
     { rol_id: "ROL_OTR", nombre: "Otros" },
   ];
 
