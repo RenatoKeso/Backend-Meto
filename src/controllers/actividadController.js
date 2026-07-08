@@ -32,6 +32,13 @@ const validarIdParam = (res, id) => {
   return true;
 };
 
+// Chequea si el usuario logueado tiene permiso sobre la cuadrilla de la actividad.
+// Central maneja todas las cuadrillas, jefe_cuadrilla solo la suya.
+const tienePermisoSobreCuadrilla = (req, id_cuadrilla) => {
+  if (req.user.role === "central") return true;
+  return req.user.id_cuadrilla === id_cuadrilla;
+};
+
 //Crear una nueva actividad
 
 const crearActividad = async (req, res) => {
@@ -46,6 +53,15 @@ const crearActividad = async (req, res) => {
       400,
       "Datos de entrada inválidos",
       parseValidationError(error),
+    );
+  }
+
+  // Un jefe de cuadrilla solo puede crear actividades para su propia cuadrilla
+  if (!tienePermisoSobreCuadrilla(req, value.id_cuadrilla)) {
+    return sendError(
+      res,
+      403,
+      "No tienes permiso para crear actividades en otra cuadrilla",
     );
   }
 
@@ -64,7 +80,18 @@ const crearActividad = async (req, res) => {
 
 const ObtenerTodasLasActividades = async (req, res) => {
   try {
-    const actividades = await actividadService.ObtenerTodasLasActividades();
+    // Central ve todas las cuadrillas. jefe_cuadrilla y voluntario solo ven la suya.
+    const esCentral = req.user.role === "central";
+
+    if (!esCentral && !req.user.id_cuadrilla) {
+      // Usuario sin cuadrilla asignada: no tiene nada que ver
+      return sendSuccess(res, 200, "Actividades obtenidas correctamente", []);
+    }
+
+    const idCuadrilla = esCentral ? null : req.user.id_cuadrilla;
+    const actividades =
+      await actividadService.ObtenerTodasLasActividades(idCuadrilla);
+
     return sendSuccess(
       res,
       200,
@@ -85,6 +112,12 @@ const ObtenerActividadPorID = async (req, res) => {
 
   try {
     const actividad = await actividadService.ObtenerActividadPorID(id);
+
+    // Solo la ve central o los integrantes de esa misma cuadrilla
+    if (!tienePermisoSobreCuadrilla(req, actividad.id_cuadrilla)) {
+      return sendError(res, 403, "No tienes permiso para ver esta actividad");
+    }
+
     return sendSuccess(res, 200, "Actividad obtenida correctamente", actividad);
   } catch (serviceError) {
     return handleServiceError(res, serviceError);
@@ -112,6 +145,16 @@ const ModificarActividad = async (req, res) => {
   }
 
   try {
+    const actividadExistente = await actividadService.ObtenerActividadPorID(id);
+
+    if (!tienePermisoSobreCuadrilla(req, actividadExistente.id_cuadrilla)) {
+      return sendError(
+        res,
+        403,
+        "No tienes permiso para modificar actividades de otra cuadrilla",
+      );
+    }
+
     const actividadActualizada = await actividadService.ModificarActividad(
       id,
       value,
@@ -134,6 +177,16 @@ const EliminarActividad = async (req, res) => {
   if (!validarIdParam(res, id)) return undefined;
 
   try {
+    const actividadExistente = await actividadService.ObtenerActividadPorID(id);
+
+    if (!tienePermisoSobreCuadrilla(req, actividadExistente.id_cuadrilla)) {
+      return sendError(
+        res,
+        403,
+        "No tienes permiso para eliminar actividades de otra cuadrilla",
+      );
+    }
+
     const resultado = await actividadService.EliminarActividad(id);
     return sendSuccess(
       res,
