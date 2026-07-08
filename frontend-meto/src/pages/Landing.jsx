@@ -110,6 +110,16 @@ const Landing = () => {
             </button>
           </form>
         </div>
+
+        <div className="landing-donar-inner">
+          <h2 className="landing-form-title">¿Quieres donar?</h2>
+          <p className="landing-form-subtitle">
+            Puedes hacer un aporte sin necesidad de crear una cuenta ni iniciar sesión.
+          </p>
+          <button className="landing-btn" type="button" onClick={() => navigate('/donar')}>
+            Ir a donar
+          </button>
+        </div>
       </section>
 
       <footer className="landing-footer">
