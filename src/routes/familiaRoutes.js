@@ -7,9 +7,6 @@ const { authorizeRole } = require('../middlewares/roleMiddleware');
 // Los 3 roles pueden consultar
 const ROLES_CONSULTA = ['central', 'jefe_cuadrilla', 'voluntario'];
 
-// Ruta de prueba
-router.get('/test', (req, res) => res.json({ message: 'Familia Router is working!' }));
-
 // POST /familias — Registrar nueva familia (solo central)
 router.post('/', verifyToken, authorizeRole('central','jefe_cuadrilla'), familiaController.crearFamilia);
 

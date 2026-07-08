@@ -10,29 +10,13 @@ const router = express.Router();
 const ROLES_ORGANIZACION = ["central", "jefe_cuadrilla"];
 
 // Todas las rutas requieren autenticación (verifyToken)
-
 // Crear/modificar/eliminar: solo central y jefe_cuadrilla (y este ultimo solo en su propia cuadrilla,
 // eso se valida dentro del controller porque ahi tenemos el id_cuadrilla de la actividad)
-router.post(
-  "/",
-  verifyToken,
-  authorizeRole(...ROLES_ORGANIZACION),
-  actividadController.crearActividad,
-);
+router.post("/", verifyToken, authorizeRole(...ROLES_ORGANIZACION), actividadController.crearActividad);
 router.get("/", verifyToken, actividadController.ObtenerTodasLasActividades);
 router.get("/:id", verifyToken, actividadController.ObtenerActividadPorID);
-router.put(
-  "/:id",
-  verifyToken,
-  authorizeRole(...ROLES_ORGANIZACION),
-  actividadController.ModificarActividad,
-);
-router.delete(
-  "/:id",
-  verifyToken,
-  authorizeRole(...ROLES_ORGANIZACION),
-  actividadController.EliminarActividad,
-);
+router.put("/:id", verifyToken, authorizeRole(...ROLES_ORGANIZACION), actividadController.ModificarActividad);
+router.delete("/:id", verifyToken, authorizeRole(...ROLES_ORGANIZACION), actividadController.EliminarActividad);
 
 // GET /actividades/:id/voluntarios-elegibles - Voluntarios activos que cumplen los requisitos de la actividad (organización)
 router.get(
@@ -51,7 +35,7 @@ router.get(
 );
 
 // POST /actividades/:id/postular - El voluntario se postula o acepta la invitación (solo si es elegible)
-router.post("/:id/postular", verifyToken, postulacionController.postularOAceptar);
+router.post("/:id/postular", verifyToken, authorizeRole("voluntario"), postulacionController.postularOAceptar);
 
 // POST /actividades/:id/asignar - Asignación definitiva del voluntario a la actividad (organización)
 router.post(

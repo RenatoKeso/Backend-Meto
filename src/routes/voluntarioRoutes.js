@@ -6,10 +6,10 @@ const { authorizeRole } = require('../middlewares/roleMiddleware');
 
 // POST /voluntarios - Registro de postulación: queda público (no requiere token).
 // Central revisa y activa la cuenta después mediante PATCH.
-router.post('/',verifyToken, voluntarioController.crearVoluntario);
+router.post('/', voluntarioController.crearVoluntario);
 
-// GET /voluntarios - Solo central
-router.get('/', verifyToken, authorizeRole('central'), voluntarioController.obtenerTodosLosVoluntarios);
+// GET /voluntarios - Central (validación de postulantes) y jefe de cuadrilla (lista de su equipo)
+router.get('/', verifyToken, authorizeRole('central', 'jefe_cuadrilla'), voluntarioController.obtenerTodosLosVoluntarios);
 
 // GET /voluntarios/:rut - Los 3 roles (el propio voluntario consulta sus datos)
 router.get('/:rut', verifyToken, authorizeRole('central', 'jefe_cuadrilla', 'voluntario'), voluntarioController.obtenerVoluntarioPorId);
@@ -24,9 +24,9 @@ router.patch('/:rut/activar', verifyToken, authorizeRole('central'), voluntarioC
 router.delete('/:rut', verifyToken, authorizeRole('central'), voluntarioController.eliminarVoluntario);
 
 // PATCH /voluntarios/:rut/capacidades - Completar/actualizar capacidades físicas del voluntario (identificado por :rut)
-router.patch('/:rut/capacidades', verifyToken, voluntarioController.actualizarCapacidadFisica);
+router.patch('/:rut/capacidades', verifyToken, authorizeRole('central', 'voluntario'), voluntarioController.actualizarCapacidadFisica);
 
 // GET /voluntarios/:rut/actividades-disponibles - Actividades para las que el voluntario es elegible (identificado por :rut)
-router.get('/:rut/actividades-disponibles', verifyToken, voluntarioController.obtenerActividadesDisponibles);
+router.get('/:rut/actividades-disponibles', verifyToken, authorizeRole('central', 'jefe_cuadrilla', 'voluntario'), voluntarioController.obtenerActividadesDisponibles);
 
 module.exports = router;

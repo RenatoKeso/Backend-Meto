@@ -8,6 +8,6 @@ router.post('/', verifyToken, authorizeRole('central'), cuadrillaController.crea
 router.get('/', verifyToken, authorizeRole('central', 'jefe_cuadrilla'), cuadrillaController.obtenerTodasLasCuadrillas);
 router.get('/:id', verifyToken, authorizeRole('central', 'jefe_cuadrilla'), cuadrillaController.obtenerCuadrillaPorId);
 router.post('/:id/voluntarios', verifyToken, authorizeRole('central'), cuadrillaController.asignarVoluntario);
-router.delete('/voluntarios/:rut', verifyToken, authorizeRole('central'), cuadrillaController.quitarVoluntario);
+router.delete('/:id/voluntarios/:rut', verifyToken, authorizeRole('central'), cuadrillaController.quitarVoluntario);
 
 module.exports = router;

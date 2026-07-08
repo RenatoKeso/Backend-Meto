@@ -214,7 +214,7 @@ const activarVoluntario = async (rut, rol_id) => {
     usuarioExistente.role = roleSistema;
     await usuarioExistente.save();
   } else {
-    await userRepository.create({
+      await userRepository.crearConPasswordHasheada({
       name: `${voluntario.nombre} ${voluntario.apellido}`,
       email: voluntario.email,
       password: voluntario.passwd_hash,

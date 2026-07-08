@@ -49,13 +49,18 @@ const CrearActividad = async (payload) => {
   return nuevaActividad;
 };
 
-// Obtener actividades. Si se pasa id_cuadrilla, solo trae las de esa cuadrilla
-// (se usa para que jefe_cuadrilla/voluntario solo vean lo suyo; central manda null y ve todo)
-const ObtenerTodasLasActividades = async (id_cuadrilla = null) => {
-  const where = id_cuadrilla ? { id_cuadrilla } : {};
+//Obtener todas las actividades
+const ObtenerTodasLasActividades = async (usuarioAutenticado) => {
+  const filtro = {};
+
+  // Central ve las actividades de todas las cuadrillas; jefe de cuadrilla y
+  // voluntario solo ven las de su propia cuadrilla.
+  if (usuarioAutenticado.role !== "central") {
+    filtro.id_cuadrilla = usuarioAutenticado.id_cuadrilla;
+  }
 
   const actividades = await Actividad.findAll({
-    where,
+    where: filtro,
     order: [
       ["fecha", "ASC"],
       ["hora", "ASC"],
@@ -65,11 +70,16 @@ const ObtenerTodasLasActividades = async (id_cuadrilla = null) => {
 };
 
 //  Obtener actividad por ID
-const ObtenerActividadPorID = async (id) => {
+const ObtenerActividadPorID = async (id, usuarioAutenticado) => {
   const actividad = await Actividad.findByPk(id);
 
   if (!actividad) {
     throw buildError("Actividad no encontrada", 404);
+  }
+
+  const esDeOtraCuadrilla = actividad.id_cuadrilla !== usuarioAutenticado.id_cuadrilla;
+  if (usuarioAutenticado.role !== "central" && esDeOtraCuadrilla) {
+    throw buildError("No tienes acceso a esta actividad", 403);
   }
 
   return actividad;

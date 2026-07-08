@@ -80,18 +80,7 @@ const crearActividad = async (req, res) => {
 
 const ObtenerTodasLasActividades = async (req, res) => {
   try {
-    // Central ve todas las cuadrillas. jefe_cuadrilla y voluntario solo ven la suya.
-    const esCentral = req.user.role === "central";
-
-    if (!esCentral && !req.user.id_cuadrilla) {
-      // Usuario sin cuadrilla asignada: no tiene nada que ver
-      return sendSuccess(res, 200, "Actividades obtenidas correctamente", []);
-    }
-
-    const idCuadrilla = esCentral ? null : req.user.id_cuadrilla;
-    const actividades =
-      await actividadService.ObtenerTodasLasActividades(idCuadrilla);
-
+    const actividades = await actividadService.ObtenerTodasLasActividades(req.user);
     return sendSuccess(
       res,
       200,
@@ -111,13 +100,7 @@ const ObtenerActividadPorID = async (req, res) => {
   if (!validarIdParam(res, id)) return undefined;
 
   try {
-    const actividad = await actividadService.ObtenerActividadPorID(id);
-
-    // Solo la ve central o los integrantes de esa misma cuadrilla
-    if (!tienePermisoSobreCuadrilla(req, actividad.id_cuadrilla)) {
-      return sendError(res, 403, "No tienes permiso para ver esta actividad");
-    }
-
+    const actividad = await actividadService.ObtenerActividadPorID(id, req.user);
     return sendSuccess(res, 200, "Actividad obtenida correctamente", actividad);
   } catch (serviceError) {
     return handleServiceError(res, serviceError);

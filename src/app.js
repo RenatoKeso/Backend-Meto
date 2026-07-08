@@ -12,7 +12,6 @@ const cuadrillaRoutes = require('./routes/cuadrillaRoutes');
 const app = express();
 
 app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:3001' }));
-app.use('/uploads', express.static('uploads'));
 app.use(express.json());
 
 // Rutas públicas (no requieren token)

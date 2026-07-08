@@ -42,13 +42,17 @@ const obtenerVoluntariosElegibles = async (req, res) => {
   }
 };
 
-// Voluntario: se postula o acepta la invitación a una actividad para la que es elegible
+// Voluntario: se postula o acepta la invitación a una actividad para la que es elegible.
+// El RUT se toma del token de sesión, no del body, para que nadie pueda postular a nombre de otro voluntario.
 const postularOAceptar = async (req, res) => {
   const { id } = req.params;
-  const { rut } = req.body;
+  const rut = req.user.rut;
 
   if (!validarIdParam(res, id)) return undefined;
-  if (!validarRutBody(res, rut)) return undefined;
+
+  if (!rut) {
+    return sendError(res, 400, 'Tu cuenta no está vinculada a un perfil de voluntario');
+  }
 
   try {
     const postulacion = await postulacionService.postularOAceptar(rut, id);
