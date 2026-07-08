@@ -53,7 +53,7 @@ const seedVolunteers = async () => {
       contacto: "56911111111",
       activo: true,
       clasificacion: "obrero",
-      rol_id: "ROL_GEN",
+      rol_id: "ROL_CEN",
     },
     {
       rut: "23456789-0",
@@ -65,7 +65,7 @@ const seedVolunteers = async () => {
       contacto: "56922222222",
       activo: true,
       clasificacion: "obrero",
-      rol_id: "ROL_ZON",
+      rol_id: "ROL_CEN",
     },
     {
       rut: "34567890-1",
@@ -89,7 +89,7 @@ const seedVolunteers = async () => {
       contacto: "56944444444",
       activo: true,
       clasificacion: "obrero",
-      rol_id: "ROL_CAP",
+      rol_id: "ROL_VOL",
     },
     {
       rut: "56789012-3",

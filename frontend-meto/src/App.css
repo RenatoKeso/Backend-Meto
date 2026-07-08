@@ -530,6 +530,8 @@ table button {
   padding: 3.5rem 2rem;
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 2rem;
   flex: 1;
 }
 
@@ -541,6 +543,18 @@ table button {
   border-radius: 20px;
   box-shadow: 0 8px 30px -16px rgba(30, 136, 229, 0.2);
   border: 1px solid #bbdefb;
+}
+
+.landing-donar-inner {
+  background: white;
+  max-width: 380px;
+  width: 100%;
+  padding: 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px -16px rgba(30, 136, 229, 0.2);
+  border: 1px solid #bbdefb;
+  text-align: center;
+  align-self: flex-start;
 }
 
 .landing-form-title {
