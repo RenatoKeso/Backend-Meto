@@ -18,7 +18,10 @@ const createDefaultUsers = async (users) => {
   const createdUsers = await Promise.all(
     users.map(async (userData) => {
       const existingUser = await findByEmail(userData.email);
-      if (existingUser) return existingUser;
+      if (existingUser) {
+        await existingUser.update({ role: userData.role });
+        return existingUser;
+      }
       return create(userData);
     })
   );

@@ -7,7 +7,7 @@ const Actividad = sequelize.define(
   {
     id_cuadrilla:{
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     id_actividad: {
       type: DataTypes.INTEGER,

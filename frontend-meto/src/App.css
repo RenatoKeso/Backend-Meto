@@ -426,3 +426,198 @@ table button {
 .table tr:hover td {
   background: #f8fafc;
 }
+
+/* ────────── Landing Page ────────── */
+
+.landing {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Hero */
+.landing-hero {
+  background: #0076C9;
+  color: white;
+  text-align: center;
+  padding: 4rem 2rem 3.5rem;
+}
+
+.landing-hero-inner {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.landing-logo {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 1rem;
+}
+
+.landing-kicker {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0 0 0.5rem;
+}
+
+.landing-title {
+  font-size: 2.8rem;
+  font-weight: 900;
+  margin: 0 0 0.75rem;
+  letter-spacing: -0.02em;
+}
+
+.landing-desc {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.88);
+  margin: 0 auto 1.5rem;
+  max-width: 520px;
+}
+
+.landing-meta {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.landing-meta strong {
+  color: white;
+}
+
+/* Botón general landing */
+.landing-btn {
+  display: inline-block;
+  padding: 0.8rem 2rem;
+  border: none;
+  border-radius: 12px;
+  background: #0092DD;
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+  text-decoration: none;
+}
+
+.landing-btn:hover:not(:disabled) {
+  background: #0076C9;
+  transform: scale(1.02);
+}
+
+.landing-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.landing-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Formulario */
+.landing-form-section {
+  background: #FAFDFE;
+  padding: 3.5rem 2rem;
+  display: flex;
+  justify-content: center;
+  flex: 1;
+}
+
+.landing-form-inner {
+  background: white;
+  max-width: 480px;
+  width: 100%;
+  padding: 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px -16px rgba(0, 118, 201, 0.2);
+  border: 1px solid #A2CEE8;
+}
+
+.landing-form-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0076C9;
+  margin: 0 0 0.25rem;
+}
+
+.landing-form-subtitle {
+  font-size: 0.9rem;
+  color: #5FADDE;
+  margin: 0 0 1.5rem;
+}
+
+.landing-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.landing-form label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #0076C9;
+  margin-bottom: 0.3rem;
+}
+
+.landing-form input,
+.landing-form textarea {
+  padding: 0.7rem 0.85rem;
+  margin-bottom: 1.2rem;
+  border: 1.5px solid #A2CEE8;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  background: white;
+}
+
+.landing-form input::placeholder,
+.landing-form textarea::placeholder {
+  color: #A2CEE8;
+}
+
+.landing-form input:focus,
+.landing-form textarea:focus {
+  outline: none;
+  border-color: #0092DD;
+  box-shadow: 0 0 0 3px rgba(0, 146, 221, 0.2);
+}
+
+.landing-form-mensaje {
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.landing-form-mensaje--exito {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.landing-form-mensaje--error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+/* Footer */
+.landing-footer {
+  background: #0076C9;
+  color: white;
+  text-align: center;
+  padding: 1.25rem 2rem;
+  font-size: 0.85rem;
+}
+
+.landing-footer p {
+  margin: 0;
+  opacity: 0.85;
+}
