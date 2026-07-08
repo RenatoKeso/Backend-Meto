@@ -1,8 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 
+import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Perfil from './pages/Perfil';
 import NoAutorizado from './pages/NoAutorizado';
@@ -31,17 +32,12 @@ const Layout = ({ children }) => (
   </>
 );
 
-const RedirectHome = () => {
-  const { isAuthenticated } = useAuth();
-  return <Navigate to={isAuthenticated ? '/perfil' : '/login'} replace />;
-};
-
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<RedirectHome />} />
+          <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/postular" element={<Postulacion />} />
           <Route path="/donar" element={<Donacion />} />
