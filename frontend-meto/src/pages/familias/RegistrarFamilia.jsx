@@ -116,7 +116,7 @@ const RegistrarFamilia = () => {
         <h3>Integrantes del grupo familiar</h3>
 
         {integrantes.map((integrante, index) => (
-          <div key={index} style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: '0.75rem', marginBottom: '0.75rem' }}>
+          <div key={index} className="card" style ={{marginBottom: '1rem',maxWidth: '100%'}}>
             <label>Nombre</label>
             <input
               value={integrante.nombre}
@@ -144,7 +144,11 @@ const RegistrarFamilia = () => {
               onChange={(e) => handleIntegranteChange(index, 'parentesco', e.target.value)}
               required
             />
-            <button type="button" onClick={() => quitarIntegrante(index)} style={{ background: '#d92626', marginTop: '0.5rem' }}>
+            <button 
+              type="button" 
+              onClick={() => quitarIntegrante(index)} 
+              style={{ background: '#d92626', marginTop: '0.5rem' }}
+              >
               Quitar integrante
             </button>
           </div>
