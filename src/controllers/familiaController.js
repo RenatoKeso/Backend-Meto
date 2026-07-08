@@ -1,14 +1,14 @@
-/**
- * Controlador de Familias
- * Maneja las peticiones HTTP relacionadas con familias beneficiadas
+/*
+  Controlador de Familias
+  Maneja las peticiones HTTP relacionadas con familias beneficiadas
  */
 const { sendSuccess, sendError } = require('../handlers/responseHandler');
 const familiaService = require('../services/familiaService');
 const { createFamiliaSchema, updateFamiliaSchema } = require('../validations/familiaValidations');
 
-// ─────────────────────────────────────────────
+
 // Helpers (mismo patrón que voluntarioController)
-// ─────────────────────────────────────────────
+
 const parseValidationError = (error) => {
   if (!error || !error.details) return [];
   return error.details.map((detail) => detail.message);
@@ -27,9 +27,9 @@ const validarIdParam = (res, id) => {
   return true;
 };
 
-// ─────────────────────────────────────────────
+
 // POST /familias — Registrar una nueva familia
-// ─────────────────────────────────────────────
+
 const crearFamilia = async (req, res) => {
   const { error, value } = createFamiliaSchema.validate(req.body, {
     abortEarly: false,
@@ -61,9 +61,9 @@ const obtenerTodasLasFamilias = async (req, res) => {
   }
 };
 
-// ─────────────────────────────────────────────
+
 // GET /familias/:id — Consultar una familia por ID
-// ─────────────────────────────────────────────
+
 const obtenerFamiliaPorId = async (req, res) => {
   const { id } = req.params;
 
@@ -77,9 +77,9 @@ const obtenerFamiliaPorId = async (req, res) => {
   }
 };
 
-// ─────────────────────────────────────────────
+
 // PATCH /familias/:id — Actualizar una familia (solo roles autorizados)
-// ─────────────────────────────────────────────
+
 const actualizarFamilia = async (req, res) => {
   const { id } = req.params;
 
@@ -102,9 +102,9 @@ const actualizarFamilia = async (req, res) => {
   }
 };
 
-// ─────────────────────────────────────────────
+
 // DELETE /familias/:id — Borrado lógico (solo roles autorizados)
-// ─────────────────────────────────────────────
+
 const eliminarFamilia = async (req, res) => {
   const { id } = req.params;
 
