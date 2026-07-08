@@ -80,10 +80,9 @@ const Postulantes = () => {
                   }
                 >
                   <option value="">Seleccionar rol...</option>
-                  <option value="ROL_GEN">Coordinador General</option>
-                  <option value="ROL_ZON">Coordinador Zonal</option>
+                  <option value="ROL_CEN">Central</option>
                   <option value="ROL_JEF">Jefe de Cuadrilla</option>
-                  <option value="ROL_CAP">Capataz</option>
+                  <option value="ROL_VOL">Voluntario</option>
                   <option value="ROL_OTR">Otros</option>
                 </select>
               </td>

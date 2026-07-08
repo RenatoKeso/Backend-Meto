@@ -12,10 +12,9 @@ const SALT_ROUNDS = 10;
 // Definido junto al usuario: coordinadores -> central, jefe de cuadrilla ->
 // jefe_cuadrilla, el resto -> voluntario.
 const ROL_A_SISTEMA = {
-  ROL_GEN: "central",
-  ROL_ZON: "central",
+  ROL_CEN: "central",
   ROL_JEF: "jefe_cuadrilla",
-  ROL_CAP: "voluntario",
+  ROL_VOL: "voluntario",
   ROL_OTR: "voluntario",
 };
 
