@@ -1,5 +1,5 @@
 const { Familia, MiembroFamilia } = require('../entities/FamiliaModels');
-const { Sequelize } = requiere('sequelize');
+const { Sequelize } = require('sequelize');
 
 // Helpers (mismo patrón que voluntarioService)
 
