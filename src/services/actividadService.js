@@ -49,9 +49,13 @@ const CrearActividad = async (payload) => {
   return nuevaActividad;
 };
 
-//Obtener todas las actividades
-const ObtenerTodasLasActividades = async () => {
+// Obtener actividades. Si se pasa id_cuadrilla, solo trae las de esa cuadrilla
+// (se usa para que jefe_cuadrilla/voluntario solo vean lo suyo; central manda null y ve todo)
+const ObtenerTodasLasActividades = async (id_cuadrilla = null) => {
+  const where = id_cuadrilla ? { id_cuadrilla } : {};
+
   const actividades = await Actividad.findAll({
+    where,
     order: [
       ["fecha", "ASC"],
       ["hora", "ASC"],

@@ -10,11 +10,29 @@ const router = express.Router();
 const ROLES_ORGANIZACION = ["central", "jefe_cuadrilla"];
 
 // Todas las rutas requieren autenticación (verifyToken)
-router.post("/", verifyToken, actividadController.crearActividad);
+
+// Crear/modificar/eliminar: solo central y jefe_cuadrilla (y este ultimo solo en su propia cuadrilla,
+// eso se valida dentro del controller porque ahi tenemos el id_cuadrilla de la actividad)
+router.post(
+  "/",
+  verifyToken,
+  authorizeRole(...ROLES_ORGANIZACION),
+  actividadController.crearActividad,
+);
 router.get("/", verifyToken, actividadController.ObtenerTodasLasActividades);
 router.get("/:id", verifyToken, actividadController.ObtenerActividadPorID);
-router.put("/:id", verifyToken, actividadController.ModificarActividad);
-router.delete("/:id", verifyToken, actividadController.EliminarActividad);
+router.put(
+  "/:id",
+  verifyToken,
+  authorizeRole(...ROLES_ORGANIZACION),
+  actividadController.ModificarActividad,
+);
+router.delete(
+  "/:id",
+  verifyToken,
+  authorizeRole(...ROLES_ORGANIZACION),
+  actividadController.EliminarActividad,
+);
 
 // GET /actividades/:id/voluntarios-elegibles - Voluntarios activos que cumplen los requisitos de la actividad (organización)
 router.get(
