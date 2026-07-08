@@ -1,5 +1,5 @@
 const { Familia, MiembroFamilia } = require('../entities/FamiliaModels');
-
+const { Sequelize } = requiere('sequelize');
 
 // Helpers (mismo patrón que voluntarioService)
 
@@ -8,6 +8,29 @@ const buildError = (message, statusCode = 500, details = null) => {
   error.statusCode = statusCode;
   if (details) error.details = details;
   return error;
+};
+
+//Helper para normalizar el texto de direccion
+const condicionDireccionDuplicada = (payload) => {
+  const calleNorm = payload.calle?.trim().toLowerCase();
+  const comunaNorm = payload.comuna?.trim().toLowerCase();
+  const regionNorm = payload.region?.trim().toLowerCase();
+
+   return Sequelize.and(
+    Sequelize.where(
+      Sequelize.fn('LOWER', Sequelize.fn('TRIM', Sequelize.col('calle'))),
+      calleNorm
+    ),
+    { numero: payload.numero },
+    Sequelize.where(
+      Sequelize.fn('LOWER', Sequelize.fn('TRIM', Sequelize.col('comuna'))),
+      comunaNorm
+    ),
+    Sequelize.where(
+      Sequelize.fn('LOWER', Sequelize.fn('TRIM', Sequelize.col('region'))),
+      regionNorm
+    )
+  );
 };
 
 
@@ -24,13 +47,8 @@ const createFamilia = async (payload) => {
   }
 
   const direccionExistente = await Familia.findOne({ 
-
-    where: {
-      calle: payload.calle,
-      numero: payload.numero,
-      comuna: payload.comuna,
-      region: payload.region
-    } 
+    where: condicionDireccionDuplicada(payload)
+   
   });
 
   if(direccionExistente){
@@ -116,6 +134,25 @@ const updateFamilia = async (id_familia, payload) => {
       throw buildError('Ya existe otra familia con ese RUT de representante', 409);
     }
   }
+
+ if (payload.calle || payload.numero || payload.comuna || payload.region){
+
+  const direccionAValidar = {
+    calle: payload.calle ?? familia.calle,
+    numero: payload.numero ?? familia.numero,
+    comuna: payload.comuna ?? familia.comuna,
+    region: payload.region ?? familia.region
+ };
+
+ const otraFamiliaConDireccion = await Familia.findOne({
+  where: condicionDireccionDuplicada(direccionAValidar)
+ });
+
+  if(otraFamiliaConDireccion && otraFamiliaConDireccion.id_familia !== Number(id_familia)) {
+
+    throw buildError('Ya existe otra familia registrada con esa direccion', 409);
+  }
+}
 
   // Separar los campos de integrantes del resto del payload
   const { integrantes, ...datosFamilia } = payload;
