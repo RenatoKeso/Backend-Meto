@@ -158,7 +158,7 @@ const EditarFamilia = () => {
         <h3>Integrantes del grupo familiar</h3>
 
         {integrantes.map((integrante, index) => (
-          <div key={index} style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: '0.75rem', marginBottom: '0.75rem' }}>
+          <div key={index} className= "card" style={{ marginBottom: '1rem', maxWidth: '100%' }}>
             <label>Nombre</label>
             <input
               value={integrante.nombre}

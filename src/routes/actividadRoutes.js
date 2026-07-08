@@ -10,6 +10,8 @@ const router = express.Router();
 const ROLES_ORGANIZACION = ["central", "jefe_cuadrilla"];
 
 // Todas las rutas requieren autenticación (verifyToken)
+// Crear/modificar/eliminar: solo central y jefe_cuadrilla (y este ultimo solo en su propia cuadrilla,
+// eso se valida dentro del controller porque ahi tenemos el id_cuadrilla de la actividad)
 router.post("/", verifyToken, authorizeRole(...ROLES_ORGANIZACION), actividadController.crearActividad);
 router.get("/", verifyToken, actividadController.ObtenerTodasLasActividades);
 router.get("/:id", verifyToken, actividadController.ObtenerActividadPorID);
