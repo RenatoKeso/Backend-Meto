@@ -40,16 +40,28 @@ const asignarVoluntario = async (id_cuadrilla, rut) => {
         throw error;
     }
 
+    if (voluntario.id_cuadrilla && voluntario.id_cuadrilla !== Number(id_cuadrilla)) {
+        const error = new Error(`El voluntario ya pertenece a la cuadrilla ${voluntario.id_cuadrilla}. Quítalo de esa cuadrilla antes de asignarlo a otra.`);
+        error.statusCode = 409;
+        throw error;
+    }
+
     voluntario.id_cuadrilla = id_cuadrilla;
     await voluntario.save();
     return voluntario;
 };
 
-const quitarVoluntario = async (rut) => {
+const quitarVoluntario = async (id_cuadrilla, rut) => {
     const voluntario = await UsuarioVoluntario.findByPk(rut);
     if (!voluntario) {
         const error = new Error('Voluntario no encontrado');
         error.statusCode = 404;
+        throw error;
+    }
+
+    if (voluntario.id_cuadrilla !== Number(id_cuadrilla)) {
+        const error = new Error('Este voluntario no pertenece a la cuadrilla indicada');
+        error.statusCode = 409;
         throw error;
     }
 

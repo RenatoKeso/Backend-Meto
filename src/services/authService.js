@@ -4,6 +4,26 @@ const userRepository = require('../repositories/userRepository');
 const configEnv = require('../config/configEnv');
 const { UsuarioVoluntario, Cuadrilla } = require('../entities/VoluntarioModels');
 
+// Cruza el email del usuario del sistema con su perfil de voluntario (si tiene)
+// para saber a qué cuadrilla pertenece y cuál es su RUT real. Se usa tanto en
+// el login como en /me, para que ambos devuelvan siempre los mismos datos.
+const obtenerDatosVoluntario = async (email) => {
+  const voluntario = await UsuarioVoluntario.findOne({ where: { email } });
+
+  if (!voluntario) {
+    return { id_cuadrilla: null, rut: null };
+  }
+
+  if (voluntario.id_cuadrilla) {
+    // Es un miembro normal de una cuadrilla
+    return { id_cuadrilla: voluntario.id_cuadrilla, rut: voluntario.rut };
+  }
+
+  // No es miembro de ninguna, revisamos si es el jefe de alguna cuadrilla
+  const cuadrilla = await Cuadrilla.findOne({ where: { rut: voluntario.rut } });
+  return { id_cuadrilla: cuadrilla ? cuadrilla.id_cuadrilla : null, rut: voluntario.rut };
+};
+
 const login = async (email, password) => {
   const user = await userRepository.findByEmail(email);
   if (!user) throw new Error('Correo o contraseña incorrectos');
@@ -11,28 +31,19 @@ const login = async (email, password) => {
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) throw new Error('Correo o contraseña incorrectos');
 
-  // Buscamos si este usuario corresponde a un voluntario/jefe de cuadrilla
-  // cruzando por email, para obtener su id_cuadrilla si aplica.
-  let id_cuadrilla = null;
-  const voluntario = await UsuarioVoluntario.findOne({ where: { email: user.email } });
-
-  if (voluntario) {
-    const cuadrilla = await Cuadrilla.findOne({ where: { rut: voluntario.rut } });
-    if (cuadrilla) {
-      id_cuadrilla = cuadrilla.id_cuadrilla;
-    }
-  }
+  const { id_cuadrilla, rut } = await obtenerDatosVoluntario(user.email);
 
   const payload = {
     id: user.id,
     role: user.role,
     email: user.email,
-    id_cuadrilla
+    id_cuadrilla,
+    rut
   };
   const token = jwt.sign(payload, configEnv.jwt.secret, { expiresIn: '2h' });
 
   return {
-    user: { id: user.id, name: user.name, email: user.email, role: user.role, id_cuadrilla },
+    user: { id: user.id, name: user.name, email: user.email, role: user.role, id_cuadrilla, rut },
     token
   };
 };
@@ -40,7 +51,10 @@ const login = async (email, password) => {
 const getMe = async (id) => {
   const user = await userRepository.findById(id);
   if (!user) throw new Error('Usuario no encontrado');
-  return { id: user.id, name: user.name, email: user.email, role: user.role };
+
+  const { id_cuadrilla, rut } = await obtenerDatosVoluntario(user.email);
+
+  return { id: user.id, name: user.name, email: user.email, role: user.role, id_cuadrilla, rut };
 };
 
 const ROLES_VALIDOS = ['central', 'jefe_cuadrilla', 'voluntario'];

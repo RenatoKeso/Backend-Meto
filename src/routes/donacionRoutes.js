@@ -25,4 +25,10 @@ router.get('/', verifyToken, authorizeRole('central'), donacionController.obtene
 // cambiar estado de una donacion
 router.patch('/:id', verifyToken, authorizeRole('central'), donacionController.cambiarEstado);
 
+// total de donaciones validas (ingresos efectivos), solo admin
+router.get('/ingresos-efectivos', verifyToken, authorizeRole('central'), donacionController.obtenerIngresosEfectivos);
+
+// ver el comprobante adjunto de una donacion, solo admin
+router.get('/:id/comprobante', verifyToken, authorizeRole('central'), donacionController.obtenerComprobante);
+
 module.exports = router;

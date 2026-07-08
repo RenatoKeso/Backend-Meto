@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { donacionApi } from '../../api/donacionApi';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
-
 const ESTADO_LABEL = {
 pendiente: 'Pendiente',
 validada: 'Validada',
@@ -50,6 +48,17 @@ const cambiarEstado = async (id, estado) => {
     }
 };
 
+const verComprobante = async (id) => {
+    try {
+    const url = await donacionApi.verComprobante(id);
+    window.open(url, '_blank');
+    } catch (err) {
+        alert(err.message);
+    }
+};
+
+
+
 const totalValidado = donaciones
     .filter((d) => d.estado === 'validada')
     .reduce((sum, d) => sum + Number(d.monto), 0);
@@ -89,9 +98,9 @@ return (
                 <td>${Number(d.monto).toLocaleString('es-CL')}</td>
                 <td>
                 {d.comprobante_url ? (
-                    <a href={`${API_URL}/uploads/${d.comprobante_url}`} target="_blank" rel="noreferrer">
+                    <button type="button" onClick={() => verComprobante(d.id_donacion)}>
                     Ver
-                    </a>
+                    </button>
                 ) : (
                     '—'
                 )}

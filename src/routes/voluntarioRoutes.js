@@ -24,9 +24,9 @@ router.patch('/:rut/activar', verifyToken, authorizeRole('central'), voluntarioC
 router.delete('/:rut', verifyToken, authorizeRole('central'), voluntarioController.eliminarVoluntario);
 
 // PATCH /voluntarios/:rut/capacidades - Completar/actualizar capacidades físicas del voluntario (identificado por :rut)
-router.patch('/:rut/capacidades', voluntarioController.actualizarCapacidadFisica);
+router.patch('/:rut/capacidades', verifyToken, authorizeRole('central', 'voluntario'), voluntarioController.actualizarCapacidadFisica);
 
 // GET /voluntarios/:rut/actividades-disponibles - Actividades para las que el voluntario es elegible (identificado por :rut)
-router.get('/:rut/actividades-disponibles', voluntarioController.obtenerActividadesDisponibles);
+router.get('/:rut/actividades-disponibles', verifyToken, authorizeRole('central', 'jefe_cuadrilla', 'voluntario'), voluntarioController.obtenerActividadesDisponibles);
 
 module.exports = router;

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { actividadApi } from '../../api/actividadApi';
+import { voluntarioApi } from '../../api/voluntarioApi';
 
 const ESTADO_LABEL = {
   pendiente: 'Pendiente',
@@ -13,13 +14,12 @@ const ESTADO_LABEL = {
 /**
  * Detalle de una actividad.
  * - Central / Jefe de cuadrilla: ven voluntarios elegibles, postulantes, pueden asignar, editar y eliminar.
- * - Voluntario: puede postularse ingresando su RUT (el sistema identifica al voluntario por RUT,
- *   igual que en el resto del flujo de voluntarios, no por sesión).
+ * - Voluntario: puede postularse con un click (el sistema lo identifica por su sesión, no hace falta escribir el RUT).
  */
 const ActividadDetalle = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { role } = useAuth();
+  const { role, user } = useAuth();
   const puedeGestionar = role === 'central' || role === 'jefe_cuadrilla';
 
   const [actividad, setActividad] = useState(null);
@@ -28,7 +28,6 @@ const ActividadDetalle = () => {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
 
-  const [rutPostular, setRutPostular] = useState('');
   const [mensajeAccion, setMensajeAccion] = useState('');
   const [errorAccion, setErrorAccion] = useState('');
 
@@ -59,14 +58,21 @@ const ActividadDetalle = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  const handlePostular = async (e) => {
-    e.preventDefault();
+  const handlePostular = async () => {
     setMensajeAccion('');
     setErrorAccion('');
+
     try {
-      await actividadApi.postular(id, rutPostular);
+      const disponibles = await voluntarioApi.actividadesDisponibles(user.rut);
+      const esElegible = (disponibles.data || []).some((a) => String(a.id_actividad) === String(id));
+
+      if (!esElegible) {
+        setErrorAccion('No cumples los requisitos para postular a esta actividad, o ya te postulaste antes.');
+        return;
+      }
+
+      await actividadApi.postular(id);
       setMensajeAccion('Postulación enviada correctamente.');
-      setRutPostular('');
     } catch (err) {
       setErrorAccion(err.message);
     }
@@ -127,14 +133,10 @@ const ActividadDetalle = () => {
       {mensajeAccion && <p className="form-success">{mensajeAccion}</p>}
       {errorAccion && <p className="form-error">{errorAccion}</p>}
 
-      {!puedeGestionar && (
+        {!puedeGestionar && (
         <div className="card" style={{ maxWidth: 420, marginTop: '1rem' }}>
           <h3>Postularme a esta actividad</h3>
-          <form onSubmit={handlePostular}>
-            <label>Tu RUT (formato 12345678-9)</label>
-            <input value={rutPostular} onChange={(e) => setRutPostular(e.target.value)} required />
-            <button type="submit" style={{ marginTop: '0.5rem' }}>Postularme</button>
-          </form>
+          <button type="button" onClick={handlePostular} style={{ marginTop: '0.5rem' }}>Postularme</button>
         </div>
       )}
 

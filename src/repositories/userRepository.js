@@ -2,6 +2,11 @@ const { User } = require('../entities');
 
 const create = (userData) => User.create(userData);
 
+// El password que llega acá ya viene encriptado con bcrypt (se reutiliza el
+// hash del voluntario), por eso se salta la regla beforeCreate para no
+// encriptarlo dos veces.
+const crearConPasswordHasheada = (userData) => User.create(userData, { hooks: false });
+
 const findByEmail = (email) => User.findOne({ where: { email } });
 
 const findById = (id) => User.findByPk(id);
@@ -25,8 +30,7 @@ const createDefaultUsers = async (users) => {
   return createdUsers;
 };
 
-module.exports = { create, findByEmail, findById, updateRole, createDefaultUsers };
-
+module.exports = { create, crearConPasswordHasheada, findByEmail, findById, updateRole, createDefaultUsers };
 //QUE HACE ESTE CODIGO: Este código define un repositorio de usuarios para una aplicación 
 // Contiene funciones para crear un nuevo usuario, encontrar un usuario por correo electrónico, 
 // Encontrar un usuario por ID y crear usuarios predeterminados si no existen.

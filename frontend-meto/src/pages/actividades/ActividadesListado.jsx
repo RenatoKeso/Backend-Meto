@@ -1,5 +1,9 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState, useMemo } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import { format, parse, startOfWeek, getDay } from 'date-fns';
+import { es } from 'date-fns/locale';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { useAuth } from '../../context/AuthContext';
 import { actividadApi } from '../../api/actividadApi';
 
@@ -10,8 +14,28 @@ const ESTADO_LABEL = {
   cancelada: 'Cancelada'
 };
 
+const localizador = dateFnsLocalizer({
+  format,
+  parse,
+  startOfWeek,
+  getDay,
+  locales: { es }
+});
+
+const mensajesCalendario = {
+  next: 'Siguiente',
+  previous: 'Anterior',
+  today: 'Hoy',
+  month: 'Mes',
+  week: 'Semana',
+  day: 'Día',
+  agenda: 'Agenda',
+  noEventsInRange: 'No hay actividades en este rango.'
+};
+
 const ActividadesListado = () => {
   const { role } = useAuth();
+  const navigate = useNavigate();
   const [actividades, setActividades] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
@@ -33,6 +57,20 @@ const ActividadesListado = () => {
     cargar();
   }, []);
 
+  const eventos = useMemo(
+    () =>
+      actividades.map((a) => {
+        const inicio = new Date(`${a.fecha}T${a.hora}`);
+        return {
+          id_actividad: a.id_actividad,
+          title: `${a.nombre} (${ESTADO_LABEL[a.estado] || a.estado})`,
+          start: inicio,
+          end: inicio
+        };
+      }),
+    [actividades]
+  );
+
   return (
     <div className="page">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -50,34 +88,18 @@ const ActividadesListado = () => {
       {!cargando && actividades.length === 0 && <p>No hay actividades registradas todavía.</p>}
 
       {actividades.length > 0 && (
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Fecha</th>
-              <th>Hora</th>
-              <th>Estado</th>
-              <th>Rango de edad</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {actividades.map((a) => (
-              <tr key={a.id_actividad}>
-                <td>{a.nombre}</td>
-                <td>{a.fecha}</td>
-                <td>{a.hora}</td>
-                <td>{ESTADO_LABEL[a.estado] || a.estado}</td>
-                <td>
-                  {a.edad_minima ?? '—'} a {a.edad_maxima ?? '—'}
-                </td>
-                <td>
-                  <Link to={`/actividades/${a.id_actividad}`}>Ver detalle</Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="card" style={{ height: 650, marginTop: '1rem' }}>
+          <Calendar
+            localizer={localizador}
+            events={eventos}
+            startAccessor="start"
+            endAccessor="end"
+            style={{ height: '100%' }}
+            culture="es"
+            messages={mensajesCalendario}
+            onSelectEvent={(evento) => navigate(`/actividades/${evento.id_actividad}`)}
+          />
+        </div>
       )}
     </div>
   );

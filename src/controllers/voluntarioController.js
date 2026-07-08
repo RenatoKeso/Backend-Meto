@@ -41,6 +41,17 @@ const validarRutParam = (res, rut) => {
   return true;
 };
 
+// Si el que llama es un voluntario, solo puede modificar sus propios datos.
+// Central y jefe de cuadrilla sí pueden operar sobre cualquier voluntario del equipo.
+const validarPropioRutOAdmin = (req, res, rut) => {
+  if (req.user.role === "voluntario" && req.user.rut !== rut) {
+    sendError(res, 403, "No puedes modificar los datos de otro voluntario");
+    return false;
+  }
+
+  return true;
+};
+
 const crearVoluntario = async (req, res) => {
   const { error, value } = createVoluntarioSchema.validate(req.body, {
     abortEarly: false,
@@ -101,11 +112,14 @@ const obtenerVoluntarioPorId = async (req, res) => {
   }
 };
 
-
 const actualizarVoluntario = async (req, res) => {
   const { rut } = req.params;
 
   if (!validarRutParam(res, rut)) {
+    return undefined;
+  }
+
+  if (!validarPropioRutOAdmin(req, res, rut)) {
     return undefined;
   }
 
@@ -162,6 +176,10 @@ const actualizarCapacidadFisica = async (req, res) => {
   const { rut } = req.params;
 
   if (!validarRutParam(res, rut)) {
+    return undefined;
+  }
+
+  if (!validarPropioRutOAdmin(req, res, rut)) {
     return undefined;
   }
 

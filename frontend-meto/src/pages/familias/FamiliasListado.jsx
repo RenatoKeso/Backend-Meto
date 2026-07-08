@@ -5,7 +5,7 @@ import { familiaApi } from '../../api/familiaApi';
 
 /**
  * Listado de familias beneficiadas.
- * Central y Jefe de cuadrilla pueden verlo; solo Central puede registrar, editar y eliminar.
+ * Central y Jefe de cuadrilla pueden verlo, registrar y editar; solo Central puede eliminar.
  */
 const FamiliasListado = () => {
   const { role } = useAuth();
@@ -45,7 +45,7 @@ const FamiliasListado = () => {
     <div className="page">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1>Familias beneficiadas</h1>
-        {role === 'central' && (
+        {(role === 'central' || role === 'jefe_cuadrilla') && (
           <Link to="/familias/nueva">
             <button type="button">+ Registrar familia</button>
           </Link>
@@ -68,7 +68,7 @@ const FamiliasListado = () => {
               <th>Región</th>
               <th>Tipo de ayuda</th>
               <th>Integrantes</th>
-              {role === 'central' && <th></th>}
+              {(role === 'central' || role === 'jefe_cuadrilla') && <th></th>}
             </tr>
           </thead>
           <tbody>
@@ -81,18 +81,20 @@ const FamiliasListado = () => {
                 <td>{f.region}</td>
                 <td>{f.tipo_ayuda}</td>
                 <td>{f.integrantes?.length ?? 0}</td>
-                {role === 'central' && (
+                {(role === 'central' || role === 'jefe_cuadrilla') && (
                   <td style={{ display: 'flex', gap: '0.5rem' }}>
                     <Link to={`/familias/${f.id_familia}/editar`}>
                       <button type="button">Editar</button>
                     </Link>
-                    <button
-                      type="button"
-                      onClick={() => handleEliminar(f.id_familia, `${f.nombre_representante} ${f.apellido_representante}`)}
-                      style={{ background: '#d92626' }}
-                    >
-                      Eliminar
-                    </button>
+                    {role === 'central' && (
+                      <button
+                        type="button"
+                        onClick={() => handleEliminar(f.id_familia, `${f.nombre_representante} ${f.apellido_representante}`)}
+                        style={{ background: '#d92626' }}
+                      >
+                        Eliminar
+                      </button>
+                    )}
                   </td>
                 )}
               </tr>

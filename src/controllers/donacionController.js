@@ -1,3 +1,4 @@
+const path = require('path');
 const { sendSuccess, sendError } = require('../handlers/responseHandler');
 const donacionService = require('../services/donacionService');
 const { crearDonacionSchema } = require('../validations/donacionValidations');
@@ -54,4 +55,24 @@ const cambiarEstado = async (req, res) => {
   }
 };
 
-module.exports = { crearDonacion, obtenerDonaciones, cambiarEstado };
+const obtenerIngresosEfectivos = async (req, res) => {
+  try {
+    const ingresos = await donacionService.obtenerIngresosEfectivos();
+    return sendSuccess(res, 200, 'Ingresos efectivos obtenidos', ingresos);
+  } catch (error) {
+    return manejarError(res, error);
+  }
+};
+
+const obtenerComprobante = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const donacion = await donacionService.obtenerDonacionPorId(id);
+    const rutaComprobante = path.join(__dirname, '..', '..', 'uploads', donacion.comprobante_url);
+    return res.sendFile(rutaComprobante);
+  } catch (error) {
+    return manejarError(res, error);
+  }
+};
+
+module.exports = { crearDonacion, obtenerDonaciones, cambiarEstado, obtenerIngresosEfectivos, obtenerComprobante };

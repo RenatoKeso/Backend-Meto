@@ -68,7 +68,7 @@ const asignarVoluntario = async (req, res) => {
 
 const quitarVoluntario = async (req, res) => {
     try {
-        const voluntario = await cuadrillaService.quitarVoluntario(req.params.rut);
+        const voluntario = await cuadrillaService.quitarVoluntario(req.params.id, req.params.rut);
         return sendSuccess(res, 200, 'Voluntario removido de la cuadrilla correctamente', voluntario);
     } catch (serviceError) {
         return handleServiceError(res, serviceError);

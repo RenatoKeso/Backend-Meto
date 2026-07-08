@@ -12,6 +12,16 @@ const obtenerDonaciones = async () => {
   return donaciones;
 };
 
+const obtenerDonacionPorId = async (id) => {
+  const donacion = await Donacion.findByPk(id);
+  if (!donacion) {
+    const error = new Error('Donacion no encontrada');
+    error.statusCode = 404;
+    throw error;
+  }
+  return donacion;
+};
+
 const cambiarEstado = async (id, estado) => {
   const donacion = await Donacion.findByPk(id);
   if (!donacion) {
@@ -30,4 +40,10 @@ const cambiarEstado = async (id, estado) => {
   return donacion;
 };
 
-module.exports = { crearDonacion, obtenerDonaciones, cambiarEstado };
+const obtenerIngresosEfectivos = async () => {
+  const donacionesValidas = await Donacion.findAll({ where: { estado: 'validada' } });
+  const totalIngresos = donacionesValidas.reduce((acumulado, donacion) => acumulado + donacion.monto, 0);
+  return { totalIngresos, cantidadDonaciones: donacionesValidas.length };
+};
+
+module.exports = { crearDonacion, obtenerDonaciones, cambiarEstado, obtenerIngresosEfectivos, obtenerDonacionPorId };

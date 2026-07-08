@@ -62,7 +62,7 @@ const CuadrillaDetalle = () => {
     if (!window.confirm(`¿Quitar a ${nombreCompleto} de esta cuadrilla?`)) return;
 
     try {
-      await cuadrillaApi.quitarVoluntario(rut);
+      await cuadrillaApi.quitarVoluntario(id, rut);
       cargar();
     } catch (err) {
       alert(err.message);
